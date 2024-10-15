@@ -1,0 +1,19 @@
+[package]
+name = "wkd-exporter"
+version = "0.1.0"
+edition = "2021"
+authors = ["Wiktor Kwapisiewicz <wiktor@metacode.biz>"]
+description = "Exports an OpenPGP keyring into an advanced WKD directory path"
+repository = "https://github.com/wiktor-k/wkd-exporter"
+license = "MIT OR Apache-2.0"
+keywords = ["openpgp", "wkd"]
+categories = ["command-line-utilities"]
+exclude = [".github"]
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+email_address = "0.2.9"
+pgp = "0.14.0"
+sha1 = "0.10.6"
+testresult = "0.4.1"
+z-base-32 = "0.1.4"
