@@ -59,8 +59,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@just
+      - uses: taiki-e/install-action@cargo-deny
       - name: Run dependencies check
-        uses: EmbarkStudios/cargo-deny-action@v1
+        run: just dependencies
 
   lints:
     name: Clippy lints
