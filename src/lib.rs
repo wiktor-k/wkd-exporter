@@ -1,9 +1,8 @@
 use std::{fs::OpenOptions, io::Read, path::PathBuf, str::FromStr};
 
+use clap::Parser;
 use email_address::EmailAddress;
 use pgp::{ser::Serialize, Deserializable, SignedPublicKey};
-
-use clap::Parser;
 
 #[derive(Debug, Parser)]
 pub struct Args {
