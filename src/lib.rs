@@ -29,15 +29,15 @@ pub enum Error {
 /// use wkd_exporter::export;
 ///
 /// export(
-///     "/tmp/well-known",
 ///     std::fs::File::open("tests/test-cases/simple.pgp")?,
+///     "/tmp/well-known",
 /// )?;
 /// # Ok(()) }
 /// ```
-pub fn export(well_known: impl AsRef<Path>, input: impl Read) -> Result<(), Error> {
+pub fn export(keyring: impl Read, well_known: impl AsRef<Path>) -> Result<(), Error> {
     let openpgpkey = well_known.as_ref().join("openpgpkey");
     std::fs::create_dir_all(&openpgpkey)?;
-    let iterator = SignedPublicKey::from_reader_many(input)?.0;
+    let iterator = SignedPublicKey::from_reader_many(keyring)?.0;
     for key in iterator {
         let key = key?;
         for (encoded_local, domain) in key

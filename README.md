@@ -28,8 +28,8 @@ This project can also be used as a library:
 
 ```rust
 wkd_exporter::export(
-    "/tmp/well-known",
      std::fs::File::open("tests/test-cases/simple.pgp").expect("file to exist"),
+    "/tmp/well-known",
 ).expect("exporting to succeed");
 ```
 

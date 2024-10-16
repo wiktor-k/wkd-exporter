@@ -10,6 +10,6 @@ pub struct Args {
 
 fn main() -> Result<(), Error> {
     let args = Args::parse();
-    export(args.well_known, std::io::stdin())?;
+    export(std::io::stdin(), args.well_known)?;
     Ok(())
 }

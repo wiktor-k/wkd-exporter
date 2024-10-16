@@ -17,7 +17,7 @@ fn main(#[files("tests/test-cases/*.pgp")] keyring: PathBuf) -> TestResult {
         expected_dir.display(),
         output_dir.display()
     );
-    export(&output_dir, keyring)?;
+    export(keyring, &output_dir)?;
     assert!(
         !is_different(expected_dir, output_dir)?,
         "actual dir has differing content from the expected dir"
