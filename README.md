@@ -24,6 +24,15 @@ $ tree /tmp/tmp.LUDvIoI59g | head
     │   │   ├── wp39wwhpjdb34fbif9i7de4usnndsm14
 ```
 
+This project can also be used as a library:
+
+```rust
+wkd_exporter::export(
+    "/tmp/well-known",
+     std::fs::File::open("tests/test-cases/simple.pgp").expect("file to exist"),
+).expect("exporting to succeed");
+```
+
 ## License
 
 This project is licensed under either of:

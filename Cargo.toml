@@ -15,10 +15,11 @@ clap = { version = "4.5.20", features = ["derive"] }
 email_address = "0.2.9"
 pgp = "0.14.0"
 sha1 = "0.10.6"
-testresult = "0.4.1"
+thiserror = "1.0.64"
 z-base-32 = "0.1.4"
 
 [dev-dependencies]
+testresult = "0.4.1"
 dir-diff = "0.3.3"
 rstest = "0.23.0"
 tempfile = "3.13.0"

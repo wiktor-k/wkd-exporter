@@ -2087,6 +2087,7 @@ dependencies = [
  "sha1",
  "tempfile",
  "testresult",
+ "thiserror",
  "z-base-32",
 ]
 

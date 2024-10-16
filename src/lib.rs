@@ -1,16 +1,41 @@
-use std::{fs::OpenOptions, io::Read, path::PathBuf, str::FromStr};
+#![doc = include_str!("../README.md")]
+#![deny(missing_debug_implementations)]
+#![deny(missing_docs)]
 
-use clap::Parser;
+use std::{fs::OpenOptions, io::Read, path::Path, str::FromStr};
+
 use email_address::EmailAddress;
 use pgp::{ser::Serialize, Deserializable, SignedPublicKey};
 
-#[derive(Debug, Parser)]
-pub struct Args {
-    pub well_known: PathBuf,
+/// Error when exporting the keyring.
+#[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
+pub enum Error {
+    /// PGP processing failed.
+    #[error("PGP processing error occurred: {0}")]
+    Pgp(#[from] pgp::errors::Error),
+
+    /// I/O operation failed.
+    #[error("I/O error occurred: {0}")]
+    Io(#[from] std::io::Error),
 }
 
-pub fn run(args: Args, input: impl Read) -> testresult::TestResult {
-    let openpgpkey = args.well_known.join("openpgpkey");
+/// Exports a keyring file (`input`) to a given well known directory.
+///
+/// # Examples
+///
+/// ```
+/// # fn main() -> testresult::TestResult {
+/// use wkd_exporter::export;
+///
+/// export(
+///     "/tmp/well-known",
+///     std::fs::File::open("tests/test-cases/simple.pgp")?,
+/// )?;
+/// # Ok(()) }
+/// ```
+pub fn export(well_known: impl AsRef<Path>, input: impl Read) -> Result<(), Error> {
+    let openpgpkey = well_known.as_ref().join("openpgpkey");
     std::fs::create_dir_all(&openpgpkey)?;
     let iterator = SignedPublicKey::from_reader_many(input)?.0;
     for key in iterator {

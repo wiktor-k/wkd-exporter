@@ -4,7 +4,7 @@ use dir_diff::is_different;
 use rstest::rstest;
 use tempfile::tempdir;
 use testresult::TestResult;
-use wkd_exporter::{run, Args};
+use wkd_exporter::export;
 
 #[rstest]
 fn main(#[files("tests/test-cases/*.pgp")] keyring: PathBuf) -> TestResult {
@@ -17,12 +17,7 @@ fn main(#[files("tests/test-cases/*.pgp")] keyring: PathBuf) -> TestResult {
         expected_dir.display(),
         output_dir.display()
     );
-    run(
-        Args {
-            well_known: output_dir.clone(),
-        },
-        keyring,
-    )?;
+    export(&output_dir, keyring)?;
     assert!(
         !is_different(expected_dir, output_dir)?,
         "actual dir has differing content from the expected dir"

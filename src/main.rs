@@ -1,8 +1,15 @@
-use clap::Parser;
-use wkd_exporter::{run, Args};
+use std::path::PathBuf;
 
-fn main() -> testresult::TestResult {
+use clap::Parser;
+use wkd_exporter::{export, Error};
+
+#[derive(Debug, Parser)]
+pub struct Args {
+    well_known: PathBuf,
+}
+
+fn main() -> Result<(), Error> {
     let args = Args::parse();
-    run(args, std::io::stdin())?;
+    export(args.well_known, std::io::stdin())?;
     Ok(())
 }
