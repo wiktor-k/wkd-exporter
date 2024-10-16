@@ -17,3 +17,8 @@ pgp = "0.14.0"
 sha1 = "0.10.6"
 testresult = "0.4.1"
 z-base-32 = "0.1.4"
+
+[dev-dependencies]
+dir-diff = "0.3.3"
+rstest = "0.23.0"
+tempfile = "3.13.0"
