@@ -30,7 +30,7 @@ This project can also be used as a library:
 wkd_exporter::export(
      std::fs::File::open("tests/test-cases-default/simple.pgp").expect("file to exist"),
     "/tmp/well-known",
-    wkd_exporter::Options::default(),
+    Default::default(),
 ).expect("exporting to succeed");
 ```
 
