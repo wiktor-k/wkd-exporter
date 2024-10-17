@@ -8,6 +8,7 @@ use email_address::EmailAddress;
 use pgp::{ser::Serialize, Deserializable, SignedPublicKey};
 
 #[cfg(feature = "cli")]
+#[doc(hidden)]
 pub mod cli;
 
 /// Error when exporting the keyring.
