@@ -3,7 +3,9 @@
 [![CI](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml/badge.svg)](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/wkd-exporter)](https://crates.io/crates/wkd-exporter)
 
-Exports an OpenPGP keyring into an advanced WKD directory path.
+Exports an OpenPGP keyring into the [Web Key Directory][WKD] directory path.
+
+[WKD]: https://datatracker.ietf.org/doc/draft-koch-openpgp-webkey-service/
 
 Use it like this:
 
