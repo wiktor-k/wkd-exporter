@@ -8,20 +8,20 @@ Exports an OpenPGP keyring into an advanced WKD directory path.
 Use it like this:
 
 ```sh
-$ gpg --export | cargo run $(mktemp -d)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.07s
-     Running `/home/wiktor/tmp/cargo/debug/wkd-exporter /tmp/tmp.LUDvIoI59g`
-$ tree /tmp/tmp.LUDvIoI59g | head
-/tmp/tmp.LUDvIoI59g
+$ cargo install wkd-exporter
+$ DIR=$(mktemp -d)
+$ gpg --export | wkd-exporter --domain archlinux.org $DIR
+$ tree $DIR | head
+/tmp/tmp.ZaHdlAQGRw
 └── openpgpkey
-    ├── 1und1.de
-    │   ├── hu
-    │   │   └── yuu1xd7t7h8nmdq5ijihuwzwzdww85e7
-    │   └── policy
-    ├── 2ndquadrant.com
-    │   ├── hu
-    │   │   ├── brg8ebaozf8ke5xuw9k4qs5n96us8sbj
-    │   │   ├── wp39wwhpjdb34fbif9i7de4usnndsm14
+    └── archlinux.org
+        ├── hu
+        │   ├── 46yqwra65to1p94e9ebafpucymkwsi7f
+        │   ├── 9drt4xorn699rkbj5xyq7ykoc1z5nnof
+        │   ├── 9hy3wi4ewwiicomnjmhewifn6d1gi87i
+        │   ├── 9sh859e31bn46hmfxyftn3ymop5ewdkz
+        │   ├── b9qi357oeysqibkxmmh3hanrppd6nj9p
+        │   ├── btfkn1ht1kzda3e9495fe4sjznkygui4
 ```
 
 This project can also be used as a library:
