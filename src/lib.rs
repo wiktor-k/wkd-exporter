@@ -48,9 +48,11 @@ pub enum Variant<'a> {
 /// these explicitly mentioned:
 ///
 /// ```
-/// use wkd_exporter::Options;
+/// use wkd_exporter::{Options, Variant};
 ///
-/// let only_arch = Options::default().set_allowed_domains(vec!["archlinux.org"]);
+/// let only_arch = Options::default()
+///     .set_allowed_domains(vec!["archlinux.org"])
+///     .set_variant(Variant::Advanced);
 /// ```
 #[derive(Debug, Default)]
 pub struct Options<'a, 'b> {
@@ -66,6 +68,17 @@ where
     /// Sets a list of allowed domains for the export.
     ///
     /// Setting this option to `None` (the default) exports all domains.
+    ///
+    /// # Examples
+    ///
+    /// The following code makes the exporting process filter domains to only
+    /// these explicitly mentioned:
+    ///
+    /// ```
+    /// use wkd_exporter::Options;
+    ///
+    /// let only_arch = Options::default().set_allowed_domains(vec!["archlinux.org"]);
+    /// ```
     pub fn set_allowed_domains(mut self, allowed_domains: impl Into<Option<Vec<&'a str>>>) -> Self {
         self.allowed_domains = allowed_domains.into();
         self
@@ -84,6 +97,17 @@ where
     /// Setting a direct variant implies that the filter for that one
     /// domain will be applied as well. There is no need to use
     /// [Self::set_allowed_domains] when using [Variant::Direct].
+    ///
+    /// # Examples
+    ///
+    /// For small, single domain deployments, direct WKD variant may be
+    /// more appropriate than the default:
+    ///
+    /// ```
+    /// use wkd_exporter::{Options, Variant};
+    ///
+    /// let direct = Options::default().set_variant(Variant::Direct("metacode.biz"));
+    /// ```
     pub fn set_variant(mut self, variant: Variant<'b>) -> Self {
         self.variant = variant;
         if let Variant::Direct(domain) = self.variant {
