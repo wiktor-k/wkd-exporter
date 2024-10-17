@@ -4,7 +4,7 @@ use dir_diff::is_different;
 use rstest::rstest;
 use tempfile::tempdir;
 use testresult::TestResult;
-use wkd_exporter::{export, Options};
+use wkd_exporter::{export, Options, Variant};
 
 #[rstest]
 fn default_options(#[files("tests/test-cases-default/*.pgp")] keyring: PathBuf) -> TestResult {
@@ -18,6 +18,16 @@ fn archlinux_domain_filter(
     test_export_with_options(
         keyring,
         Options::default().set_allowed_domains(vec!["archlinux.org"]),
+    )
+}
+
+#[rstest]
+fn archlinux_direct(
+    #[files("tests/test-cases-archlinux.org-direct/*.pgp")] keyring: PathBuf,
+) -> TestResult {
+    test_export_with_options(
+        keyring,
+        Options::default().set_variant(Variant::Direct("archlinux.org")),
     )
 }
 

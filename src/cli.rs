@@ -18,6 +18,10 @@ pub struct Cli {
     ///
     /// By default all domains are exported but if this option is
     /// given only the selected ones will be exported.
-    #[clap(long, value_parser)]
+    #[clap(long)]
     pub domain: Option<Vec<String>>,
+
+    /// Select direct WKD variant with a filter for this single domain.
+    #[clap(long)]
+    pub direct: Option<String>,
 }

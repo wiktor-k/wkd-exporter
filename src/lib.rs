@@ -24,6 +24,20 @@ pub enum Error {
     Io(#[from] std::io::Error),
 }
 
+/// WKD variant.
+///
+/// There are two WKD directory structures: direct and advanced.
+/// Direct supports only one domain while advanced can support any number of domains.
+#[derive(Debug, Default)]
+pub enum Variant<'a> {
+    /// Advanced variant supporting multiple domains.
+    #[default]
+    Advanced,
+
+    /// Direct variant supporting just one domain.
+    Direct(&'a str),
+}
+
 /// Exporting options.
 ///
 /// This struct can be used to adjust the exporting process.
@@ -39,11 +53,16 @@ pub enum Error {
 /// let only_arch = Options::default().set_allowed_domains(vec!["archlinux.org"]);
 /// ```
 #[derive(Debug, Default)]
-pub struct Options<'a> {
+pub struct Options<'a, 'b> {
     allowed_domains: Option<Vec<&'a str>>,
+
+    variant: Variant<'b>,
 }
 
-impl<'a> Options<'a> {
+impl<'a, 'b> Options<'a, 'b>
+where
+    'b: 'a,
+{
     /// Sets a list of allowed domains for the export.
     ///
     /// Setting this option to `None` (the default) exports all domains.
@@ -58,6 +77,20 @@ impl<'a> Options<'a> {
             .as_ref()
             .map(|domains| domains.contains(&domain))
             .unwrap_or(true)
+    }
+
+    /// Set WKD directory variant.
+    ///
+    /// Setting a direct variant implies that the filter for that one
+    /// domain will be applied as well. There is no need to use
+    /// [Self::set_allowed_domains] when using [Variant::Direct].
+    pub fn set_variant(mut self, variant: Variant<'b>) -> Self {
+        self.variant = variant;
+        if let Variant::Direct(domain) = self.variant {
+            self.set_allowed_domains(vec![domain])
+        } else {
+            self
+        }
     }
 }
 
@@ -103,7 +136,11 @@ pub fn export(
             })
             .filter(|(_, domain)| options.is_domain_allowed(domain))
         {
-            let domain = openpgpkey.join(&domain);
+            let domain = if let Variant::Advanced = options.variant {
+                &openpgpkey.join(&domain)
+            } else {
+                &openpgpkey
+            };
             let hu = domain.join("hu");
             std::fs::create_dir_all(&hu)?;
 
