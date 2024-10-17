@@ -10,8 +10,15 @@ keywords = ["openpgp", "wkd"]
 categories = ["command-line-utilities"]
 exclude = [".github"]
 
+[[bin]]
+name = "wkd-exporter"
+required-features = ["cli"]
+
+[features]
+cli = ["dep:clap"]
+
 [dependencies]
-clap = { version = "4.5.20", features = ["derive"] }
+clap = { version = "4.5.20", features = ["derive"], optional = true }
 email_address = "0.2.9"
 pgp = "0.14.0"
 sha1 = "0.10.6"

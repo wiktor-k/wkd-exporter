@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use wkd_exporter::{export, Error, Options};
+use wkd_exporter::{cli::Cli, export, Error, Options};
 
 #[derive(Debug, Parser)]
 pub struct Args {
@@ -14,7 +14,7 @@ pub struct Args {
 }
 
 fn main() -> Result<(), Error> {
-    let args = Args::parse();
+    let args = Cli::parse();
 
     let options = Options::default().set_allowed_domains(
         args.domain

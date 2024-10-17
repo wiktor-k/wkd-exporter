@@ -87,3 +87,42 @@ fix:
 
     # fmt must be last as clippy's changes may break formatting
     cargo +nightly fmt --all
+
+render-script := '''
+    //! ```cargo
+    //! [dependencies]
+    //! pkg = { path = "PATH", package = "wkd-exporter", features = ["cli"] }
+    //! clap_allgen = "0.2.1"
+    //! ```
+
+    fn main() -> Result<(), Box<dyn std::error::Error>> {
+        clap_allgen::render_KIND::<pkg::cli::Cli>(
+            &std::env::args().collect::<Vec<_>>()[1],
+        )?;
+        Ok(())
+    }
+'''
+
+# Render `manpages` or `shell_completions` (`kind`) for the package.
+generate kind:
+    #!/usr/bin/bash
+
+    set -Eeuo pipefail
+
+    readonly output_dir="${CARGO_TARGET_DIR:-$PWD/output}"
+    mkdir --parents "$output_dir"
+
+    readonly kind="{{ kind }}"
+
+    case "$kind" in
+      manpages|shell_completions)
+          ;;
+      *)
+          printf 'Only "manpages" and "shell_completions" are supported.\n'
+          exit 1
+    esac
+
+    script="$(mktemp --suffix=.rs)"
+    sed "s#PATH#$PWD#g;s/KIND/{{ kind }}/g" > "$script" <<< '{{ render-script }}'
+    rust-script "$script" "$output_dir/{{ kind }}"
+    rm --force "$script"

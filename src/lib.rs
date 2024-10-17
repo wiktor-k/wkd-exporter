@@ -7,6 +7,9 @@ use std::{fs::OpenOptions, io::Read, path::Path, str::FromStr};
 use email_address::EmailAddress;
 use pgp::{ser::Serialize, Deserializable, SignedPublicKey};
 
+#[cfg(feature = "cli")]
+pub mod cli;
+
 /// Error when exporting the keyring.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
