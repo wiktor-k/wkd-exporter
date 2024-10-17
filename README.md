@@ -7,7 +7,7 @@ Exports an OpenPGP keyring into the [Web Key Directory][WKD] directory path.
 
 [WKD]: https://datatracker.ietf.org/doc/draft-koch-openpgp-webkey-service/
 
-Use it like this:
+Use it like this (advanced variant with a domain filter):
 
 ```sh
 $ cargo install wkd-exporter
@@ -24,6 +24,19 @@ $ tree $DIR | head
         │   ├── 9sh859e31bn46hmfxyftn3ymop5ewdkz
         │   ├── b9qi357oeysqibkxmmh3hanrppd6nj9p
         │   ├── btfkn1ht1kzda3e9495fe4sjznkygui4
+```
+
+For smaller deployments, direct variant may be more appropriate:
+
+```sh
+$ DIR=$(mktemp -d)
+$ gpg --export | wkd-exporter --direct metacode.biz $DIR
+$ tree $DIR | head
+/tmp/tmp.cxEBeXnwdv
+└── openpgpkey
+    ├── hu
+    │   └── gebusffkx9g581i6ch4t3ewgwd6dctmp
+    └── policy
 ```
 
 This project can also be used as a library:
