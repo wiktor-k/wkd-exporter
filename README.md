@@ -28,7 +28,7 @@ This project can also be used as a library:
 
 ```rust
 wkd_exporter::export(
-     std::fs::File::open("tests/test-cases/simple.pgp").expect("file to exist"),
+     std::fs::File::open("tests/test-cases-default/simple.pgp").expect("file to exist"),
     "/tmp/well-known",
     wkd_exporter::Options::default(),
 ).expect("exporting to succeed");

@@ -22,7 +22,27 @@ pub enum Error {
 
 /// Exporting options.
 #[derive(Debug, Default)]
-pub struct Options {}
+pub struct Options<'a> {
+    allowed_domains: Option<Vec<&'a str>>,
+}
+
+impl<'a> Options<'a> {
+    /// Sets a list of allowed domains for the export.
+    ///
+    /// Setting this option to `None` (the default) exports all domains.
+    pub fn set_allowed_domains(mut self, allowed_domains: impl Into<Option<Vec<&'a str>>>) -> Self {
+        self.allowed_domains = allowed_domains.into();
+        self
+    }
+
+    /// Check if a given domain is allowed for export.
+    pub fn is_domain_allowed(&self, domain: &str) -> bool {
+        self.allowed_domains
+            .as_ref()
+            .map(|domains| domains.contains(&domain))
+            .unwrap_or(true)
+    }
+}
 
 /// Exports a keyring file (`input`) to a given well known directory.
 ///
@@ -33,7 +53,7 @@ pub struct Options {}
 /// use wkd_exporter::{export, Options};
 ///
 /// export(
-///     std::fs::File::open("tests/test-cases/simple.pgp")?,
+///     std::fs::File::open("tests/test-cases-default/simple.pgp")?,
 ///     "/tmp/well-known",
 ///     Options::default(),
 /// )?;
@@ -42,7 +62,7 @@ pub struct Options {}
 pub fn export(
     keyring: impl Read,
     well_known: impl AsRef<Path>,
-    _options: Options,
+    options: Options,
 ) -> Result<(), Error> {
     let openpgpkey = well_known.as_ref().join("openpgpkey");
     std::fs::create_dir_all(&openpgpkey)?;
@@ -64,6 +84,7 @@ pub fn export(
                     email.domain().to_string(),
                 )
             })
+            .filter(|(_, domain)| options.is_domain_allowed(domain))
         {
             let domain = openpgpkey.join(&domain);
             let hu = domain.join("hu");

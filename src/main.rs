@@ -5,11 +5,23 @@ use wkd_exporter::{export, Error, Options};
 
 #[derive(Debug, Parser)]
 pub struct Args {
+    /// Well known directory that will be the output of the exporting process.
     well_known: PathBuf,
+
+    /// Only export the following domain (may be given multiple times).
+    #[clap(long, value_parser)]
+    domain: Option<Vec<String>>,
 }
 
 fn main() -> Result<(), Error> {
     let args = Args::parse();
-    export(std::io::stdin(), args.well_known, Options::default())?;
+
+    let options = Options::default().set_allowed_domains(
+        args.domain
+            .as_ref()
+            .map(|domains| domains.iter().map(|domain| &**domain).collect()),
+    );
+
+    export(std::io::stdin(), args.well_known, options)?;
     Ok(())
 }
