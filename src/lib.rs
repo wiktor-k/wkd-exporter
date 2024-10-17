@@ -25,6 +25,19 @@ pub enum Error {
 }
 
 /// Exporting options.
+///
+/// This struct can be used to adjust the exporting process.
+///
+/// # Examples
+///
+/// The following code makes the exporting process filter domains to only
+/// these explicitly mentioned:
+///
+/// ```
+/// use wkd_exporter::Options;
+///
+/// let only_arch = Options::default().set_allowed_domains(vec!["archlinux.org"]);
+/// ```
 #[derive(Debug, Default)]
 pub struct Options<'a> {
     allowed_domains: Option<Vec<&'a str>>,
