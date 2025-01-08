@@ -44,19 +44,23 @@ pub enum Variant<'a> {
 ///
 /// # Examples
 ///
-/// The following code makes the exporting process filter domains to only
-/// these explicitly mentioned:
+/// The following code makes the exporting process filter domains to
+/// only these explicitly mentioned. Additionally it supports multiple
+/// certificates for the same e-mail address:
 ///
 /// ```
 /// use wkd_exporter::{Options, Variant};
 ///
 /// let only_arch = Options::default()
 ///     .set_allowed_domains(vec!["archlinux.org"])
-///     .set_variant(Variant::Advanced);
+///     .set_variant(Variant::Advanced)
+///     .set_append(true);
 /// ```
 #[derive(Debug, Default)]
 pub struct Options<'a, 'b> {
     allowed_domains: Option<Vec<&'a str>>,
+
+    append: bool,
 
     variant: Variant<'b>,
 }
@@ -116,6 +120,31 @@ where
             self
         }
     }
+
+    /// Enables or disables append mode.
+    ///
+    /// When appending is enabled the export will not clear target
+    /// files but will rather concatenate incoming certificates to the
+    /// ones existing in target directory.
+    ///
+    /// This could be used to emit multiple certificates for one
+    /// e-mail address which is useful for certificate rotation or
+    /// storing code-signing certificates along the regular ones.
+    ///
+    /// # Examples
+    ///
+    /// Enables append-mode which creates multiple certificates for
+    /// one e-mail address:
+    ///
+    /// ```
+    /// use wkd_exporter::Options;
+    ///
+    /// let append = Options::default().set_append(true);
+    /// ```
+    pub fn set_append(mut self, append: bool) -> Self {
+        self.append = append;
+        self
+    }
 }
 
 /// Exports a keyring file (`input`) to a given well known directory.
@@ -174,7 +203,12 @@ pub fn export(
                 .write(true)
                 .open(domain.join("policy"))?;
 
-            let mut key_file = std::fs::File::create(hu.join(encoded_local))?;
+            let mut key_file = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .append(options.append)
+                .open(hu.join(encoded_local))?;
+
             key.to_writer(&mut key_file)?;
         }
     }
