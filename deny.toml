@@ -14,7 +14,7 @@ multiple-versions = "allow"
 version = 2
 allow = [
   "Apache-2.0",
-  "MIT",
   "BSD-3-Clause",
-  "Unicode-DFS-2016",
+  "MIT",
+  "Unicode-3.0",
 ]
