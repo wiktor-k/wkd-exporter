@@ -21,6 +21,18 @@ pub struct Cli {
     #[clap(long)]
     pub domain: Option<Vec<String>>,
 
+    /// Append incoming certificates to the ones already existing in
+    /// `.well-known`.
+    ///
+    /// Enable this option if you have multiple certificates
+    /// containing the same local-part and want them all to be part of
+    /// the WKD export.
+    ///
+    /// Note that running the same process twice with append and the
+    /// same `.well-known` will duplicate the certificates there.
+    #[clap(long)]
+    pub append: bool,
+
     /// Select direct WKD variant with a filter for this single domain.
     #[clap(long)]
     pub direct: Option<String>,
