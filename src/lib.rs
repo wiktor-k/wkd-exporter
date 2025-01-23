@@ -207,6 +207,7 @@ pub fn export(
                 .create(true)
                 .write(true)
                 .append(options.append)
+                .truncate(!options.append)
                 .open(hu.join(encoded_local))?;
 
             key.to_writer(&mut key_file)?;
