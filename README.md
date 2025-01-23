@@ -12,7 +12,7 @@ Use it like this (advanced variant with a domain filter):
 ```sh
 $ cargo install wkd-exporter
 $ DIR=$(mktemp -d)
-$ gpg --export | wkd-exporter --domain archlinux.org $DIR
+$ gpg --export | wkd-exporter --append --domain archlinux.org $DIR
 $ tree $DIR | head
 /tmp/tmp.ZaHdlAQGRw
 └── openpgpkey
@@ -30,7 +30,7 @@ For smaller deployments, direct variant may be more appropriate:
 
 ```sh
 $ DIR=$(mktemp -d)
-$ gpg --export | wkd-exporter --direct metacode.biz $DIR
+$ gpg --export | wkd-exporter --append --direct metacode.biz $DIR
 $ tree $DIR | head
 /tmp/tmp.cxEBeXnwdv
 └── openpgpkey
@@ -42,12 +42,27 @@ $ tree $DIR | head
 This project can also be used as a library:
 
 ```rust
-wkd_exporter::export(
+use wkd_exporter::{export, Options};
+
+export(
      std::fs::File::open("tests/test-cases-default/simple.pgp").expect("file to exist"),
     "/tmp/well-known",
-    Default::default(),
+    Options::default().set_append(true),
 ).expect("exporting to succeed");
 ```
+
+## Multiple certificates
+
+The `--append` flag causes all certificates sharing the same local part (`user` in `user@example.com`) to be exported in the same location.
+By default the exporter leaves only the last certificate.
+Appending allows exporting several certificates, for example when a certificate has been rotated (one is revoked and one is current).
+Other workflows may also require multiple certificates, e.g. a code-signing certificate which is different from a regular one.
+
+Note that if the same directory is used for export and `--append` flag has been enabled it will cause multiple copies of the same certificate to be present in the target directory.
+For that reason it is advisable to use a fresh directory when using `--append`.
+That is one of the reasons why this flag is not enabled by default (even though it is recommended).
+
+Append may become the default (and a no-op) when [certificate merging has been implemented](https://codeberg.org/heiko/rpgpie/issues/1) in our backing library.
 
 ## License
 
