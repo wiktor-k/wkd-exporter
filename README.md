@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml/badge.svg)](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/wkd-exporter)](https://crates.io/crates/wkd-exporter)
+[![latest packaged version(s)](https://repology.org/badge/latest-versions/wkd-exporter.svg)](https://repology.org/project/wkd-exporter/versions)
 
 Exports an OpenPGP keyring into the [Web Key Directory][WKD] directory path.
 
