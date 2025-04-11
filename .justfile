@@ -50,7 +50,7 @@ doc:
 
 # Check commit messages
 [group('ci')]
-[group('pacman:codespell')]
+[group('pacman:codespell git')]
 commits REFS='main..':
     #!/usr/bin/env bash
     set -Eeuo pipefail
