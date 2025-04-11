@@ -54,6 +54,12 @@ doc:
 commits REFS='main..':
     #!/usr/bin/env bash
     set -Eeuo pipefail
+
+    # fetch default branch if it's set
+    if [[ -v CI_DEFAULT_BRANCH ]]; then
+        git fetch origin $CI_DEFAULT_BRANCH
+    fi
+
     commits=$(git rev-list "{{ REFS }}")
     for commit in $commits; do
       MSG="$(git show -s --format=%B "$commit")"
