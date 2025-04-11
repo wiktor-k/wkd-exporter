@@ -1,9 +1,6 @@
-stages:
-  - generate
-  - trigger
 
-generate-matrix:
-  stage: generate
+generate-checks:
+  stage: build
   image: archlinux
   interruptible: true
   script:
@@ -15,13 +12,13 @@ generate-matrix:
     paths:
       - .gitlab-generated.yml
 
-build:
-  stage: trigger
+run-checks:
+  stage: test
   interruptible: true
   needs:
-    - generate-matrix
+    - generate-checks
   trigger:
     include:
       - artifact: .gitlab-generated.yml
-        job: generate-matrix
+        job: generate-checks
     strategy: depend
