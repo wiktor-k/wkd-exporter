@@ -14,10 +14,11 @@ spelling:
 
 # Checks source code formatting
 [group('ci')]
-[group('pacman:rust')]
+[group('pacman:rustup')]
 formatting:
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
+    rustup component add --toolchain nightly rustfmt
     cargo +nightly fmt --all -- --check
 
 # Lints the source code
