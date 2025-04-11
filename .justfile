@@ -49,7 +49,9 @@ doc:
     RUSTDOCFLAGS='-D warnings' cargo doc --no-deps
 
 # Check commit messages
-check-commits REFS='main..':
+[group('ci')]
+[group('pacman:codespell')]
+commits REFS='main..':
     #!/usr/bin/env bash
     set -euo pipefail
     for commit in $(git rev-list "{{ REFS }}"); do
