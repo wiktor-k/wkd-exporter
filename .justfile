@@ -4,48 +4,51 @@
 # codespell is very fast. cargo fmt does not need to download crates etc.
 
 # Perform all checks
-check: spelling formatting docs lints dependencies tests
+check: spell fmt doc lints deps test
 
-# Checks common spelling mistakes
+# Check spelling
 [group('ci')]
 [group('pacman:codespell')]
-spelling:
+spell:
     codespell
 
-# Checks source code formatting
+# Check source code formatting
 [group('ci')]
 [group('pacman:rustup')]
-formatting:
+fmt:
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
     rustup component add --toolchain nightly rustfmt
     cargo +nightly fmt --all -- --check
 
-# Lints the source code
+# Lint the source code
 [group('ci')]
 [group('pacman:rust')]
 lints:
     cargo clippy --tests --all --workspace --no-deps --all-targets -- -D warnings
 
-# Checks for issues with dependencies
+# Check for issues with dependencies
 [group('ci')]
 [group('pacman:cargo-deny')]
-dependencies:
+deps:
     cargo deny check
 
-# Runs all unit tests. By default ignored tests are not run. Run with `ignored=true` to run only ignored tests
+# Run unit tests
 [group('ci')]
-[group('pacman:rust')]
-tests:
-    cargo test --all
+[group('pacman:rust cargo-nextest')]
+test:
+    cargo nextest run
+    # doctests are not currently run by cargo-nextest
+    # see: https://github.com/nextest-rs/nextest/issues/16
+    cargo test --doc
 
-# Build docs for this crate only
+# Build docs
 [group('ci')]
 [group('pacman:rust')]
-docs:
+doc:
     RUSTDOCFLAGS='-D warnings' cargo doc --no-deps
 
-# Checks for commit messages
+# Check commit messages
 check-commits REFS='main..':
     #!/usr/bin/env bash
     set -euo pipefail
