@@ -20,6 +20,7 @@ for (const file of fs
         .forEach((recipe) => {
             jobs[recipe.doc] = {
                 stage: 'verify',
+                interruptible: true,
                 script: [`just --justfile ${recipe.file} ${recipe.name}`],
             }
         });

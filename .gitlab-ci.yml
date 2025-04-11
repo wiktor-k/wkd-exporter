@@ -4,14 +4,20 @@ stages:
 
 generate-matrix:
   stage: generate
-  image: node:latest
-  script: node .gitlab/create-gitlab-checks.js > .gitlab-generated.json
+  image: archlinux
+  interruptible: true
+  script:
+    - pacman-key --init
+    - pacman -Sy --needed --noconfirm archlinux-keyring
+    - source .env && pacman -Syu --needed --noconfirm nodejs just
+    - node .gitlab/create-gitlab-checks.js > .gitlab-generated.json
   artifacts:
     paths:
       - .gitlab-generated.json
 
 build:
   stage: trigger
+  interruptible: true
   needs:
     - generate-matrix
   trigger:
