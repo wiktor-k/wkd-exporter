@@ -1,0 +1,21 @@
+stages:
+  - generate
+  - trigger
+
+generate-matrix:
+  stage: generate
+  image: node:latest
+  script: node .gitlab/create-gitlab-checks.js > .gitlab-generated.json
+  artifacts:
+    paths:
+      - .gitlab-generated.json
+
+build:
+  stage: trigger
+  needs:
+    - generate-matrix
+  trigger:
+    include:
+      - artifact: .gitlab-generated.json
+        job: generate-matrix
+    strategy: depend
