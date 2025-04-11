@@ -1,8 +1,4 @@
 #!/usr/bin/env -S just --working-directory . --justfile
-# Load project-specific properties from the `.env` file
-
-set dotenv-load := true
-
 # Since this is a first recipe it's being run by default.
 # Faster checks need to be executed first for better UX.  For example
 # codespell is very fast. cargo fmt does not need to download crates etc.
@@ -12,11 +8,13 @@ check: spelling formatting docs lints dependencies tests
 
 # Checks common spelling mistakes
 [group('ci')]
+[group('pacman:codespell')]
 spelling:
     codespell
 
 # Checks source code formatting
 [group('ci')]
+[group('pacman:rust')]
 formatting:
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
@@ -24,33 +22,27 @@ formatting:
 
 # Lints the source code
 [group('ci')]
+[group('pacman:rust')]
 lints:
     cargo clippy --workspace --no-deps --all-targets -- -D warnings
 
 # Checks for issues with dependencies
 [group('ci')]
+[group('pacman:cargo-deny')]
 dependencies:
     cargo deny check
 
 # Runs all unit tests. By default ignored tests are not run. Run with `ignored=true` to run only ignored tests
 [group('ci')]
+[group('pacman:rust')]
 tests:
     cargo test --all
 
 # Build docs for this crate only
 [group('ci')]
+[group('pacman:rust')]
 docs:
     cargo doc --no-deps
-
-# Installs packages required to build
-[linux]
-install-packages:
-    sudo apt-get install --assume-yes --no-install-recommends $UBUNTU_PACKAGES
-
-[macos]
-[windows]
-install-packages:
-    echo no-op
 
 # Checks for commit messages
 check-commits REFS='main..':

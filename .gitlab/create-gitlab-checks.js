@@ -18,10 +18,22 @@ for (const file of fs
             recipe.attributes.some((attribute) => attribute.group == "ci"),
         )
         .forEach((recipe) => {
+            let pacman = recipe.attributes.find((attribute) => attribute.group.startsWith("pacman:"))
+            const packages = ['just'];
+            if (pacman) {
+                packages.push(pacman.group.split(':')[1].split(' '));
+            }
+
             jobs[recipe.doc] = {
+                image: 'archlinux',
                 stage: 'test',
                 interruptible: true,
-                script: [`just --justfile ${recipe.file} ${recipe.name}`],
+                script: [
+                    'pacman-key --init',
+                    'pacman -Sy --needed --noconfirm archlinux-keyring',
+                    `pacman -Syu --needed --noconfirm ${packages.join(' ')}`,
+                    `just --justfile ${file} ${recipe.name}`
+                ],
             }
         });
 }
