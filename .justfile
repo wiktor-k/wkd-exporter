@@ -51,16 +51,19 @@ doc:
 # Check commit messages
 [group('ci')]
 [group('pacman:codespell git')]
-commits REFS='main..':
+commits:
     #!/usr/bin/env bash
     set -Eeuo pipefail
 
     # fetch default branch if it's set
     if [[ -v CI_DEFAULT_BRANCH ]]; then
         git fetch origin $CI_DEFAULT_BRANCH
+        refs="origin/$CI_DEFAULT_BRANCH"
+    else
+        refs="main"
     fi
 
-    commits=$(git rev-list "{{ REFS }}")
+    commits=$(git rev-list "${refs}..")
     for commit in $commits; do
       MSG="$(git show -s --format=%B "$commit")"
       CODESPELL_RC="$(mktemp)"
