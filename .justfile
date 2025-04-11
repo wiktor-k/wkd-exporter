@@ -53,8 +53,9 @@ doc:
 [group('pacman:codespell')]
 commits REFS='main..':
     #!/usr/bin/env bash
-    set -euo pipefail
-    for commit in $(git rev-list "{{ REFS }}"); do
+    set -Eeuo pipefail
+    commits=$(git rev-list "{{ REFS }}")
+    for commit in $commits; do
       MSG="$(git show -s --format=%B "$commit")"
       CODESPELL_RC="$(mktemp)"
       git show "$commit:.codespellrc" > "$CODESPELL_RC"
