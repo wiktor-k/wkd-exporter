@@ -21,7 +21,7 @@ for (const file of fs
             let pacman = recipe.attributes.find((attribute) => attribute.group.startsWith("pacman:"))
             const packages = ['just'];
             if (pacman) {
-                packages.push(pacman.group.split(':')[1].split(' '));
+                packages.push(...pacman.group.split(':')[1].split(' '));
             }
 
             jobs[recipe.doc] = {
