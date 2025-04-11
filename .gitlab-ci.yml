@@ -10,10 +10,10 @@ generate-matrix:
     - pacman-key --init
     - pacman -Sy --needed --noconfirm archlinux-keyring
     - source .env && pacman -Syu --needed --noconfirm nodejs just
-    - node .gitlab/create-gitlab-checks.js > .gitlab-generated.json
+    - node .gitlab/create-gitlab-checks.js > .gitlab-generated.yml
   artifacts:
     paths:
-      - .gitlab-generated.json
+      - .gitlab-generated.yml
 
 build:
   stage: trigger
@@ -22,6 +22,6 @@ build:
     - generate-matrix
   trigger:
     include:
-      - artifact: .gitlab-generated.json
+      - artifact: .gitlab-generated.yml
         job: generate-matrix
     strategy: depend
