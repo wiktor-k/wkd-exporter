@@ -11,28 +11,34 @@ set dotenv-load := true
 check: spelling formatting docs lints dependencies tests
 
 # Checks common spelling mistakes
+[group('ci')]
 spelling:
     codespell
 
 # Checks source code formatting
+[group('ci')]
 formatting:
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
     cargo +nightly fmt --all -- --check
 
 # Lints the source code
+[group('ci')]
 lints:
     cargo clippy --workspace --no-deps --all-targets -- -D warnings
 
 # Checks for issues with dependencies
+[group('ci')]
 dependencies:
     cargo deny check
 
 # Runs all unit tests. By default ignored tests are not run. Run with `ignored=true` to run only ignored tests
+[group('ci')]
 tests:
     cargo test --all
 
 # Build docs for this crate only
+[group('ci')]
 docs:
     cargo doc --no-deps
 
