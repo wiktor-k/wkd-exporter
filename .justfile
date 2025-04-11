@@ -25,7 +25,7 @@ formatting:
 [group('ci')]
 [group('pacman:rust')]
 lints:
-    cargo clippy --workspace --no-deps --all-targets -- -D warnings
+    cargo clippy --tests --all --workspace --no-deps --all-targets -- -D warnings
 
 # Checks for issues with dependencies
 [group('ci')]
@@ -43,7 +43,7 @@ tests:
 [group('ci')]
 [group('pacman:rust')]
 docs:
-    cargo doc --no-deps
+    RUSTDOCFLAGS='-D warnings' cargo doc --no-deps
 
 # Checks for commit messages
 check-commits REFS='main..':
