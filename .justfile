@@ -43,6 +43,9 @@ test:
     # see: https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
+    # gitlabci-job {"artifacts":{"reports":{"coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
+    cargo +nightly llvm-cov --quiet --branch report --cobertura --output-path target/coverage.xml > /dev/null 2>&1
+
 # Build docs
 [group('ci')]
 doc:

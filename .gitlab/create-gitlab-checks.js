@@ -3,6 +3,8 @@ const fs = require("fs");
 
 const jobs = {};
 
+const getPragma = (body, key) => body.filter(chunk => chunk[0]?.startsWith(key)).map(chunk => chunk[0].replace(key, ''))[0];
+
 for (const file of fs
     .readdirSync(".")
     .filter((file) => file === ".justfile" || file.endsWith(".just"))) {
@@ -18,13 +20,13 @@ for (const file of fs
             recipe.attributes.some((attribute) => attribute.group == "ci"),
         )
         .forEach((recipe) => {
-            let pacman = recipe.body.filter(chunk => chunk[0]?.startsWith("# pacman -S ")).map(chunk => chunk[0].replace(/^# pacman -S /g, ''))[0];
+            let pacman = getPragma(recipe.body, "# pacman -S ");
             const packages = ['just'];
             if (pacman) {
                 packages.push(...pacman.split(' '));
             }
 
-            jobs[recipe.doc] = {
+            const job = {
                 image: 'archlinux',
                 stage: 'test',
                 interruptible: true,
@@ -34,7 +36,14 @@ for (const file of fs
                     `pacman -Syu --needed --noconfirm ${packages.join(' ')}`,
                     `just --justfile ${file} ${recipe.name}`
                 ],
+            };
+
+            const gitlabci = getPragma(recipe.body, '# gitlabci-job ');
+            if (gitlabci) {
+                Object.assign(job, JSON.parse(gitlabci));
             }
+
+            jobs[recipe.doc] = job;
         });
 }
 
