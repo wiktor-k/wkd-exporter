@@ -36,11 +36,12 @@ deps:
 # Run unit tests
 [group('ci')]
 test:
-    # pacman -S rust cargo-nextest
-    cargo nextest run
+    # pacman -S rust cargo-llvm-cov cargo-nextest rustup
+    rustup component add --toolchain nightly llvm-tools-preview
+    cargo +nightly llvm-cov --branch --no-report nextest --locked --all
     # doctests are not currently run by cargo-nextest
     # see: https://github.com/nextest-rs/nextest/issues/16
-    cargo test --doc
+    cargo +nightly llvm-cov --branch --no-report --doc --locked
 
 # Build docs
 [group('ci')]
