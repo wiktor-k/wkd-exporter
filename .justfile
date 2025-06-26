@@ -8,14 +8,14 @@ check: spell fmt doc lints deps test
 
 # Check spelling
 [group('ci')]
-[group('pacman:codespell')]
 spell:
+    # pacman -S codespell
     codespell
 
 # Check source code formatting
 [group('ci')]
-[group('pacman:rustup')]
 fmt:
+    # pacman -S rustup
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
     rustup component add --toolchain nightly rustfmt
@@ -23,20 +23,20 @@ fmt:
 
 # Lint the source code
 [group('ci')]
-[group('pacman:rust')]
 lints:
+    # pacman -S rust
     cargo clippy --tests --all --workspace --no-deps --all-targets -- -D warnings
 
 # Check for issues with dependencies
 [group('ci')]
-[group('pacman:cargo-deny')]
 deps:
+    # pacman -S cargo-deny
     cargo deny check
 
 # Run unit tests
 [group('ci')]
-[group('pacman:rust cargo-nextest')]
 test:
+    # pacman -S rust cargo-nextest
     cargo nextest run
     # doctests are not currently run by cargo-nextest
     # see: https://github.com/nextest-rs/nextest/issues/16
@@ -44,16 +44,16 @@ test:
 
 # Build docs
 [group('ci')]
-[group('pacman:rust')]
 doc:
+    # pacman -S rust
     RUSTDOCFLAGS='-D warnings' cargo doc --no-deps
 
 # Check commit messages
 [group('ci')]
-[group('pacman:codespell git')]
 commits:
     #!/usr/bin/env bash
     set -Eeuo pipefail
+    # pacman -S codespell git
 
     # fetch default branch if it's set
     if [[ -v CI_DEFAULT_BRANCH ]]; then

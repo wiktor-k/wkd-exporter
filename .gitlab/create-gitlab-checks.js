@@ -18,10 +18,10 @@ for (const file of fs
             recipe.attributes.some((attribute) => attribute.group == "ci"),
         )
         .forEach((recipe) => {
-            let pacman = recipe.attributes.find((attribute) => attribute.group.startsWith("pacman:"))
+            let pacman = recipe.body.filter(chunk => chunk[0]?.startsWith("# pacman -S ")).map(chunk => chunk[0].replace(/^# pacman -S /g, ''))[0];
             const packages = ['just'];
             if (pacman) {
-                packages.push(...pacman.group.split(':')[1].split(' '));
+                packages.push(...pacman.split(' '));
             }
 
             jobs[recipe.doc] = {
