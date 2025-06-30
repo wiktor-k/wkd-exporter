@@ -80,6 +80,7 @@
     "coverage": "/Line coverage: ([0-9.]*)%/",
     "artifacts": {
       "reports": {
+        "metrics": "target/metrics.txt",
         "coverage_report": {
           "coverage_format": "cobertura",
           "path": "target/coverage.xml"

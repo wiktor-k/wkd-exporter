@@ -46,11 +46,15 @@ test:
     # see: https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
-    # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"reports":{"coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
+    # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"reports":{"metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
     cargo +nightly llvm-cov --quiet --branch report --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
-    LC=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p' | awk '{print $1 * 100}')
-    printf 'Line coverage: %s%%\n' "$LC"
+    LINE_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p')
+    LINE_PERCENT=$(echo "$LINE_RATE" | awk '{print $1 * 100}')
+    printf 'Line coverage: %s%%\n' "$LINE_PERCENT"
+
+    BRANCH_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*branch-rate=")([^"]*)".*/\2/p')
+    printf 'line_coverage_ratio %s\nbranch_coverage_ratio %s\n' "$LINE_RATE" "$BRANCH_RATE" > target/metrics.txt
 
 # Build docs
 [group('ci')]
