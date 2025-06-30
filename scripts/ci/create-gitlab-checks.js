@@ -1,7 +1,16 @@
 const execSync = require("child_process").execSync;
 const fs = require("fs");
 
-const jobs = {};
+const jobs = {
+    variables: {
+        FF_TIMESTAMPS: true,
+        CACHE_COMPRESSION_FORMAT: 'tarzstd',
+        RUST_BACKTRACE: 'full',
+    },
+    default: {
+        interruptible: true,
+    }
+};
 
 const getPragma = (body, key) => body.filter(chunk => chunk[0]?.startsWith(key)).map(chunk => chunk[0].replace(key, ''))[0];
 
@@ -29,7 +38,6 @@ for (const file of fs
             const job = {
                 image: 'archlinux',
                 stage: 'test',
-                interruptible: true,
                 script: [
                     'pacman-key --init',
                     'pacman -Sy --needed --noconfirm archlinux-keyring',
