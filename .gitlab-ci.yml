@@ -79,7 +79,9 @@
     ],
     "coverage": "/Line coverage: ([0-9.]*)%/",
     "artifacts": {
+      "when": "always",
       "reports": {
+        "junit": "target/nextest/ci/junit.xml",
         "metrics": "target/metrics.txt",
         "coverage_report": {
           "coverage_format": "cobertura",
