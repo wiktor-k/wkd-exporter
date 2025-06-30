@@ -3,6 +3,9 @@
 # Faster checks need to be executed first for better UX.  For example
 # codespell is very fast. cargo fmt does not need to download crates etc.
 
+clippy := "cargo clippy --workspace --no-deps --all-targets"
+clippy_args := "-D warnings"
+
 # Perform all checks
 check: spell fmt doc lints deps test
 
@@ -22,10 +25,21 @@ fmt:
     cargo +nightly fmt --all -- --check
 
 # Lint the source code
-[group('ci')]
 lints:
-    # pacman -S rust
-    cargo clippy --tests --all --workspace --no-deps --all-targets -- -D warnings
+    {{ clippy }} -- {{ clippy_args }}
+
+# Lint the source code and provide a CodeClimate report
+[group('ci')]
+lints-codeclimate:
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    # pacman -S cargo-sonar rust
+    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
+    readonly CLIPPY_JSON=$(mktemp)
+    {{ clippy }} --message-format=json -- {{ clippy_args }} > "$CLIPPY_JSON" || EC=$?
+    cargo codeclimate --clippy --clippy-path "$CLIPPY_JSON" --codeclimate-path codeclimate.json
+    exit "${EC:-0}"
 
 # Check for issues with dependencies
 [group('ci')]

@@ -12,7 +12,7 @@ const jobs = {
     }
 };
 
-const getPragma = (body, key) => body.filter(chunk => chunk[0]?.startsWith(key)).map(chunk => chunk[0].replace(key, ''))[0];
+const getPragma = (body, key) => body.filter(chunk => String(chunk[0]).startsWith(key)).map(chunk => chunk[0].replace(key, ''))[0];
 
 for (const file of fs
     .readdirSync(".")

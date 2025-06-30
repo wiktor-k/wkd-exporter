@@ -57,17 +57,22 @@
       "just --justfile .justfile fmt"
     ]
   },
-  "Lint the source code": {
+  "Lint the source code and provide a CodeClimate report": {
     "image": "archlinux",
     "stage": "test",
     "script": [
       "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just rust",
+      "pacman -Syu --needed --noconfirm just cargo-sonar rust",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile lints"
-    ]
+      "just --justfile .justfile lints-codeclimate"
+    ],
+    "artifacts": {
+      "reports": {
+        "codequality": "codeclimate.json"
+      }
+    }
   },
   "Check spelling": {
     "image": "archlinux",
