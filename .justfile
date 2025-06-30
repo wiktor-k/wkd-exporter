@@ -36,6 +36,9 @@ deps:
 # Run unit tests
 [group('ci')]
 test:
+    #!/usr/bin/bash
+    set -euo pipefail
+
     # pacman -S rust cargo-llvm-cov cargo-nextest rustup
     rustup component add --toolchain nightly llvm-tools-preview
     cargo +nightly llvm-cov --branch --no-report nextest --locked --all
@@ -43,8 +46,11 @@ test:
     # see: https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
-    # gitlabci-job {"artifacts":{"reports":{"coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
+    # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"reports":{"coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
     cargo +nightly llvm-cov --quiet --branch report --cobertura --output-path target/coverage.xml > /dev/null 2>&1
+
+    LC=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p' | awk '{print $1 * 100}')
+    printf 'Line coverage: %s%%\n' "$LC"
 
 # Build docs
 [group('ci')]
