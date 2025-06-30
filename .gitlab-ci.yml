@@ -13,9 +13,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just codespell git",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile commits"
     ]
   },
@@ -23,9 +25,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just cargo-deny",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile deps"
     ]
   },
@@ -33,9 +37,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just rust",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile doc"
     ]
   },
@@ -43,9 +49,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just rustup",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile fmt"
     ]
   },
@@ -53,9 +61,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just rust",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile lints"
     ]
   },
@@ -63,9 +73,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just codespell",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile spell"
     ]
   },
@@ -73,9 +85,11 @@
     "image": "archlinux",
     "stage": "test",
     "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile test"
     ],
     "coverage": "/Line coverage: ([0-9.]*)%/",

@@ -39,9 +39,11 @@ for (const file of fs
                 image: 'archlinux',
                 stage: 'test',
                 script: [
+                    'echo -e "\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies"',
                     'pacman-key --init',
                     'pacman -Sy --needed --noconfirm archlinux-keyring',
                     `pacman -Syu --needed --noconfirm ${packages.join(' ')}`,
+                    'echo -e "\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K"',
                     `just --justfile ${file} ${recipe.name}`
                 ],
             };
