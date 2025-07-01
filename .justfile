@@ -47,7 +47,7 @@ test:
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
     # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
-    cargo +nightly llvm-cov --quiet --branch report --cobertura --output-path target/coverage.xml > /dev/null 2>&1
+    cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
     LINE_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p')
     LINE_PERCENT=$(echo "$LINE_RATE" | awk '{print $1 * 100}')
