@@ -5,6 +5,7 @@
 
 clippy := "cargo clippy --workspace --no-deps --all-targets"
 clippy_args := "-D warnings"
+nextest_args := "--locked --workspace"
 
 # Perform all checks
 check: spell fmt doc lints deps test
@@ -48,14 +49,21 @@ deps:
     cargo deny check
 
 # Run unit tests
-[group('ci')]
 test:
+    cargo nextest run {{ nextest_args }}
+    # doctests are not currently run by cargo-nextest
+    # see: https://github.com/nextest-rs/nextest/issues/16
+    cargo test --doc
+
+# Run unit tests with Coverage report
+[group('ci')]
+test-coverage:
     #!/usr/bin/bash
     set -euo pipefail
 
     # pacman -S rust cargo-llvm-cov cargo-nextest rustup
     rustup component add --toolchain nightly llvm-tools-preview
-    cargo +nightly llvm-cov --branch --no-report nextest --locked --all --profile ci
+    cargo +nightly llvm-cov --branch --no-report nextest {{ nextest_args }} --profile ci
     # doctests are not currently run by cargo-nextest
     # see: https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked

@@ -86,7 +86,7 @@
       "just --justfile .justfile spell"
     ]
   },
-  "Run unit tests": {
+  "Run unit tests with Coverage report": {
     "image": "archlinux",
     "stage": "test",
     "script": [
@@ -95,7 +95,7 @@
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile test"
+      "just --justfile .justfile test-coverage"
     ],
     "coverage": "/Line coverage: ([0-9.]*)%/",
     "artifacts": {
