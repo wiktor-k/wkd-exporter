@@ -6,9 +6,10 @@
 clippy := "cargo clippy --workspace --no-deps --all-targets"
 clippy_args := "-D warnings"
 nextest_args := "--locked --workspace"
+udeps_args := "--workspace --all-features --all-targets"
 
 # Perform all checks
-check: spell fmt doc lints deps test
+check: spell fmt doc lints deps unused-deps test
 
 # Check spelling
 [group('ci')]
@@ -47,6 +48,23 @@ lints-codeclimate:
 deps:
     # pacman -S cargo-deny
     cargo deny check
+
+# Check for unused dependencies
+unused-deps:
+    cargo +nightly udeps {{ udeps_args }}
+
+# Check for unused dependencies and provide a report
+[group('ci')]
+unused-deps-codeclimate:
+    #!/usr/bin/bash
+    set -euxo pipefail
+
+    # pacman -S cargo-sonar cargo-udeps rust
+    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
+    readonly UDEPS_JSON=$(mktemp)
+    cargo +nightly udeps {{ udeps_args }} --output json > "$UDEPS_JSON" || EC=$?
+    cargo +nightly codeclimate --udeps --udeps-path "$UDEPS_JSON" --codeclimate-path codeclimate.json
+    exit "${EC:-0}"
 
 # Run unit tests
 test:
