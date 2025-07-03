@@ -21,18 +21,6 @@
       "just --justfile .justfile commits"
     ]
   },
-  "Check for issues with dependencies": {
-    "image": "archlinux",
-    "stage": "test",
-    "script": [
-      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
-      "pacman-key --init",
-      "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just cargo-deny",
-      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile deps"
-    ]
-  },
   "Build docs": {
     "image": "archlinux",
     "stage": "test",
@@ -56,6 +44,23 @@
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile fmt"
     ]
+  },
+  "Report issues with dependencies": {
+    "image": "archlinux",
+    "stage": "test",
+    "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
+      "pacman-key --init",
+      "pacman -Sy --needed --noconfirm archlinux-keyring",
+      "pacman -Syu --needed --noconfirm just cargo-deny cargo-sonar",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
+      "just --justfile .justfile report-deps"
+    ],
+    "artifacts": {
+      "reports": {
+        "codequality": "codeclimate.json"
+      }
+    }
   },
   "Report lints in the source code": {
     "image": "archlinux",

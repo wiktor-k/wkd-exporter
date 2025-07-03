@@ -44,10 +44,21 @@ report-lints:
     exit "${EC:-0}"
 
 # Check for issues with dependencies
-[group('ci')]
 deps:
-    # pacman -S cargo-deny
     cargo deny check
+
+# Report issues with dependencies
+[group('ci')]
+report-deps:
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    # pacman -S cargo-deny cargo-sonar
+    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
+    readonly DENY_JSON=$(mktemp)
+    cargo deny --format json check 2> "$DENY_JSON" || EC=$?
+    cargo codeclimate --deny --deny-path "$DENY_JSON" --codeclimate-path codeclimate.json
+    exit "${EC:-0}"
 
 # Check for unused dependencies
 unused-deps:
