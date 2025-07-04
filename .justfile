@@ -3,10 +3,10 @@
 # Faster checks need to be executed first for better UX.  For example
 # codespell is very fast. cargo fmt does not need to download crates etc.
 
-clippy := "cargo clippy --workspace --no-deps --all-targets"
+clippy := "cargo clippy --quiet --workspace --no-deps --all-targets"
 clippy_args := "-D warnings"
 nextest_args := "--locked --workspace"
-udeps_args := "--workspace --all-features --all-targets"
+udeps_args := "--quiet --workspace --all-features --all-targets"
 
 # Perform all checks
 check: spell fmt doc lints deps unused-deps test
@@ -24,7 +24,7 @@ fmt:
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
     rustup component add --toolchain nightly rustfmt
-    cargo +nightly fmt --all -- --check
+    cargo +nightly fmt --quiet --all -- --check
 
 # Lint the source code
 lints:
@@ -100,7 +100,7 @@ report-test:
 [group('ci')]
 doc:
     # pacman -S rust
-    RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --document-private-items
+    RUSTDOCFLAGS='-D warnings' cargo doc --quiet --no-deps --document-private-items
 
 # Check commit messages
 [group('ci')]
