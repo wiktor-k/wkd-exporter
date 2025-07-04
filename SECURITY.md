@@ -12,14 +12,12 @@ Thanks for helping make the project safe for everyone!
 
 ## Reporting a vulnerability
 
-Please, report the vulnerability either through [new security advisory form][ADV] or by directly contacting our security contacts.
-
-[ADV]: https://github.com/wiktor-k/wkd-exporter/security/advisories/new
+Please, report the vulnerability by directly contacting our security contacts.
 
 Security contacts:
   - [Wiktor Kwapisiewicz][WK].
 
-[WK]: https://github.com/wiktor-k
+[WK]: https://gitlab.archlinux.org/wiktor
 
 ## Supported Versions
 

@@ -3,12 +3,12 @@ name = "wkd-exporter"
 version = "0.2.2"
 edition = "2024"
 authors = ["Wiktor Kwapisiewicz <wiktor@metacode.biz>"]
-description = "Exports an OpenPGP keyring into an advanced WKD directory path"
-repository = "https://github.com/wiktor-k/wkd-exporter"
+description = "Exports an OpenPGP keyring into an advanced WKD directory structure"
+repository = "https://gitlab.archlinux.org/archlinux/wkd-exporter"
 license = "MIT OR Apache-2.0"
-keywords = ["openpgp", "wkd"]
+keywords = ["openpgp", "wkd", "pgp"]
 categories = ["command-line-utilities"]
-exclude = [".github"]
+exclude = [".gitlab-ci.yml"]
 
 [[bin]]
 name = "wkd-exporter"

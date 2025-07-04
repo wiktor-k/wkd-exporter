@@ -1,6 +1,6 @@
 # WKD exporter
 
-[![CI](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml/badge.svg)](https://github.com/wiktor-k/wkd-exporter/actions/workflows/rust.yml)
+[![CI](https://gitlab.archlinux.org/archlinux/wkd-exporter/badges/main/pipeline.svg)](https://gitlab.archlinux.org/archlinux/wkd-exporter/badges/main/pipeline.svg)
 [![Crates.io](https://img.shields.io/crates/v/wkd-exporter)](https://crates.io/crates/wkd-exporter)
 [![latest packaged version(s)](https://repology.org/badge/latest-versions/wkd-exporter.svg)](https://repology.org/project/wkd-exporter/versions)
 
