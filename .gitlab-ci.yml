@@ -57,7 +57,7 @@
       "just --justfile .justfile fmt"
     ]
   },
-  "Lint the source code and provide a CodeClimate report": {
+  "Report lints in the source code": {
     "image": "archlinux",
     "stage": "test",
     "script": [
@@ -66,7 +66,48 @@
       "pacman -Sy --needed --noconfirm archlinux-keyring",
       "pacman -Syu --needed --noconfirm just cargo-sonar rust",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile lints-codeclimate"
+      "just --justfile .justfile report-lints"
+    ],
+    "artifacts": {
+      "reports": {
+        "codequality": "codeclimate.json"
+      }
+    }
+  },
+  "Report on unit tests": {
+    "image": "archlinux",
+    "stage": "test",
+    "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
+      "pacman-key --init",
+      "pacman -Sy --needed --noconfirm archlinux-keyring",
+      "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
+      "just --justfile .justfile report-test"
+    ],
+    "coverage": "/Line coverage: ([0-9.]*)%/",
+    "artifacts": {
+      "when": "always",
+      "reports": {
+        "junit": "target/nextest/ci/junit.xml",
+        "metrics": "target/metrics.txt",
+        "coverage_report": {
+          "coverage_format": "cobertura",
+          "path": "target/coverage.xml"
+        }
+      }
+    }
+  },
+  "Report unused dependencies": {
+    "image": "archlinux",
+    "stage": "test",
+    "script": [
+      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
+      "pacman-key --init",
+      "pacman -Sy --needed --noconfirm archlinux-keyring",
+      "pacman -Syu --needed --noconfirm just cargo-sonar cargo-udeps rust",
+      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
+      "just --justfile .justfile report-unused-deps"
     ],
     "artifacts": {
       "reports": {
@@ -85,46 +126,5 @@
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile spell"
     ]
-  },
-  "Run unit tests with Coverage report": {
-    "image": "archlinux",
-    "stage": "test",
-    "script": [
-      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
-      "pacman-key --init",
-      "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup",
-      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile test-coverage"
-    ],
-    "coverage": "/Line coverage: ([0-9.]*)%/",
-    "artifacts": {
-      "when": "always",
-      "reports": {
-        "junit": "target/nextest/ci/junit.xml",
-        "metrics": "target/metrics.txt",
-        "coverage_report": {
-          "coverage_format": "cobertura",
-          "path": "target/coverage.xml"
-        }
-      }
-    }
-  },
-  "Check for unused dependencies and provide a report": {
-    "image": "archlinux",
-    "stage": "test",
-    "script": [
-      "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
-      "pacman-key --init",
-      "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just cargo-sonar cargo-udeps rust",
-      "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
-      "just --justfile .justfile unused-deps-codeclimate"
-    ],
-    "artifacts": {
-      "reports": {
-        "codequality": "codeclimate.json"
-      }
-    }
   }
 }

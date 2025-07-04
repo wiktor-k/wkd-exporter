@@ -30,9 +30,9 @@ fmt:
 lints:
     {{ clippy }} -- {{ clippy_args }}
 
-# Lint the source code and provide a CodeClimate report
+# Report lints in the source code
 [group('ci')]
-lints-codeclimate:
+report-lints:
     #!/usr/bin/bash
     set -euo pipefail
 
@@ -53,9 +53,9 @@ deps:
 unused-deps:
     cargo +nightly udeps {{ udeps_args }}
 
-# Check for unused dependencies and provide a report
+# Report unused dependencies
 [group('ci')]
-unused-deps-codeclimate:
+report-unused-deps:
     #!/usr/bin/bash
     set -euxo pipefail
 
@@ -73,9 +73,9 @@ test:
     # see: https://github.com/nextest-rs/nextest/issues/16
     cargo test --doc
 
-# Run unit tests with Coverage report
+# Report on unit tests
 [group('ci')]
-test-coverage:
+report-test:
     #!/usr/bin/bash
     set -euo pipefail
 
