@@ -4,7 +4,7 @@ use dir_diff::is_different;
 use rstest::rstest;
 use tempfile::tempdir;
 use testresult::TestResult;
-use wkd_exporter::{export, Options, Variant};
+use wkd_exporter::{Options, Variant, export};
 
 #[rstest]
 fn default_options(#[files("tests/test-cases-default/*.pgp")] keyring: PathBuf) -> TestResult {

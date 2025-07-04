@@ -1,5 +1,5 @@
 use clap::Parser;
-use wkd_exporter::{cli::Cli, export, Error, Options, Variant};
+use wkd_exporter::{Error, Options, Variant, cli::Cli, export};
 
 fn main() -> Result<(), Error> {
     let args = Cli::parse();

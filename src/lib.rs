@@ -5,7 +5,7 @@
 use std::{fs::OpenOptions, io::Read, path::Path, str::FromStr};
 
 use email_address::EmailAddress;
-use pgp::{ser::Serialize, Deserializable, SignedPublicKey};
+use pgp::{Deserializable, SignedPublicKey, ser::Serialize};
 
 #[cfg(feature = "cli")]
 #[doc(hidden)]
@@ -153,7 +153,7 @@ where
 ///
 /// ```
 /// # fn main() -> testresult::TestResult {
-/// use wkd_exporter::{export, Options};
+/// use wkd_exporter::{Options, export};
 ///
 /// export(
 ///     std::fs::File::open("tests/test-cases-default/simple.pgp")?,
