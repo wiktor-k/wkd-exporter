@@ -48,7 +48,7 @@ use wkd_exporter::{export, Options};
 export(
      std::fs::File::open("tests/test-cases-default/simple.pgp").expect("file to exist"),
     "/tmp/well-known",
-    Options::default().set_append(true),
+    &Options::default().set_append(true),
 ).expect("exporting to succeed");
 ```
 

@@ -18,6 +18,6 @@ fn main() -> Result<(), Error> {
         )
         .set_append(args.append);
 
-    export(std::io::stdin(), args.well_known, options)?;
+    export(std::io::stdin(), args.well_known, &options)?;
     Ok(())
 }

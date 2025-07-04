@@ -8,7 +8,7 @@ use wkd_exporter::{Options, Variant, export};
 
 #[rstest]
 fn default_options(#[files("tests/test-cases-default/*.pgp")] keyring: PathBuf) -> TestResult {
-    test_export_with_options(keyring, Options::default())
+    test_export_with_options(keyring, &Options::default())
 }
 
 #[rstest]
@@ -17,7 +17,7 @@ fn archlinux_domain_filter(
 ) -> TestResult {
     test_export_with_options(
         keyring,
-        Options::default().set_allowed_domains(vec!["archlinux.org"]),
+        &Options::default().set_allowed_domains(vec!["archlinux.org"]),
     )
 }
 
@@ -27,7 +27,7 @@ fn archlinux_direct(
 ) -> TestResult {
     test_export_with_options(
         keyring,
-        Options::default().set_variant(Variant::Direct("archlinux.org")),
+        &Options::default().set_variant(Variant::Direct("archlinux.org")),
     )
 }
 
@@ -35,7 +35,7 @@ fn archlinux_direct(
 fn append_options(
     #[files("tests/test-cases-default-append/*.pgp")] keyring: PathBuf,
 ) -> TestResult {
-    test_export_with_options(keyring, Options::default().set_append(true))
+    test_export_with_options(keyring, &Options::default().set_append(true))
 }
 
 #[rstest]
@@ -44,7 +44,7 @@ fn archlinux_domain_filter_append(
 ) -> TestResult {
     test_export_with_options(
         keyring,
-        Options::default()
+        &Options::default()
             .set_allowed_domains(vec!["archlinux.org"])
             .set_append(true),
     )
@@ -56,13 +56,13 @@ fn archlinux_direct_append(
 ) -> TestResult {
     test_export_with_options(
         keyring,
-        Options::default()
+        &Options::default()
             .set_variant(Variant::Direct("archlinux.org"))
             .set_append(true),
     )
 }
 
-fn test_export_with_options(keyring: PathBuf, options: Options) -> TestResult {
+fn test_export_with_options(keyring: PathBuf, options: &Options) -> TestResult {
     let mut expected_dir = keyring.clone();
     expected_dir.set_extension("");
     let keyring = std::fs::File::open(keyring)?;
