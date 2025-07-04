@@ -100,7 +100,7 @@ report-test:
 [group('ci')]
 doc:
     # pacman -S rust
-    RUSTDOCFLAGS='-D warnings' cargo doc --no-deps
+    RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --document-private-items
 
 # Check commit messages
 [group('ci')]
