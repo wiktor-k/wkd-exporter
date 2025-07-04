@@ -70,7 +70,7 @@ report-unused-deps:
 test:
     cargo nextest run {{ nextest_args }}
     # doctests are not currently run by cargo-nextest
-    # see: https://github.com/nextest-rs/nextest/issues/16
+    # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo test --doc
 
 # Report on unit tests
@@ -83,7 +83,7 @@ report-test:
     rustup component add --toolchain nightly llvm-tools-preview
     cargo +nightly llvm-cov --branch --no-report nextest {{ nextest_args }} --profile ci
     # doctests are not currently run by cargo-nextest
-    # see: https://github.com/nextest-rs/nextest/issues/16
+    # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
     # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
