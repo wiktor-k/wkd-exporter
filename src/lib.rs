@@ -1,5 +1,4 @@
 #![doc = include_str!("../README.md")]
-#![deny(missing_debug_implementations)]
 #![deny(missing_docs)]
 
 use std::{fs::OpenOptions, io::Read, path::Path, str::FromStr};

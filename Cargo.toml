@@ -34,3 +34,6 @@ tempfile = "3.15.0"
 
 [lints.clippy]
 pedantic = "deny"
+
+[lints.rust]
+missing_debug_implementations = "deny"
