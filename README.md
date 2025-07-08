@@ -8,10 +8,22 @@ Exports an OpenPGP keyring into the [Web Key Directory][WKD] directory path.
 
 [WKD]: https://datatracker.ietf.org/doc/draft-koch-openpgp-webkey-service/
 
+Install it using your package manager or via cargo:
+
+```sh no_run
+cargo install wkd-exporter
+```
+
 Use it like this (advanced variant with a domain filter):
 
+<!--
 ```sh
-$ cargo install wkd-exporter
+$ export GNUPGHOME=$(mktemp -d)
+$ gpg --import tests/test-cases-default/simple.pgp
+```
+-->
+
+```sh
 $ DIR=$(mktemp -d)
 $ gpg --export | wkd-exporter --append --domain archlinux.org $DIR
 $ tree $DIR | head

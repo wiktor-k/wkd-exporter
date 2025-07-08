@@ -9,7 +9,7 @@ nextest_args := "--locked --workspace"
 udeps_args := "--quiet --workspace --all-features --all-targets"
 
 # Perform all checks
-check: spell fmt doc lints deps unused-deps test
+check: spell fmt doc lints deps unused-deps test integration-test
 
 # Check spelling
 [group('ci')]
@@ -84,18 +84,38 @@ test:
     # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo test --doc
 
-# Report on unit tests
+# Run integration tests
+integration-test:
+    #!/usr/bin/bash
+    set -euo pipefail
+    readonly bin=$(mktemp --directory)
+    cargo install --locked --path . --root "$bin"
+    tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$bin:$PATH" bash -eux -
+
+# Report on all tests
 [group('ci')]
 report-test:
     #!/usr/bin/bash
+    # enabling "x" here will garble text output that's parsed by GitLab for code coverage
     set -euo pipefail
 
-    # pacman -S rust cargo-llvm-cov cargo-nextest rustup
+    # pacman -S rust cargo-llvm-cov cargo-nextest rustup tangler tree
     rustup component add --toolchain nightly llvm-tools-preview
+
+    cargo +nightly llvm-cov clean
+
+    # regular unit tests
     cargo +nightly llvm-cov --branch --no-report nextest {{ nextest_args }} --profile ci
+
     # doctests are not currently run by cargo-nextest
     # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly llvm-cov --branch --no-report --doc --locked
+
+    # integration tests
+    readonly bin=$(mktemp --directory)
+    printf "#!/bin/bash\n\ncargo +nightly llvm-cov --manifest-path %s/Cargo.toml --branch --no-report run -- \"\$@\"\n" "$PWD" > "$bin/wkd-exporter"
+    chmod +x "$bin/wkd-exporter"
+    tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$bin:$PATH" bash -euxo pipefail -
 
     # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
     cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1

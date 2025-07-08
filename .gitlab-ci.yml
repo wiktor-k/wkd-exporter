@@ -79,14 +79,14 @@
       }
     }
   },
-  "Report on unit tests": {
+  "Report on all tests": {
     "image": "archlinux",
     "stage": "test",
     "script": [
       "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup",
+      "pacman -Syu --needed --noconfirm just rust cargo-llvm-cov cargo-nextest rustup tangler tree",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile report-test"
     ],
