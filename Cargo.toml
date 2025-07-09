@@ -19,18 +19,18 @@ default = ["cli"]
 cli = ["dep:clap"]
 
 [dependencies]
-clap = { version = "4.5.24", features = ["derive"], optional = true }
+clap = { version = "4.5.41", features = ["derive"], optional = true }
 email_address = "0.2.9"
-pgp = "0.14.2"
+pgp = { version = "0.16.0", default-features = false }
 sha1 = "0.10.6"
-thiserror = "2.0.9"
+thiserror = "2.0.12"
 z-base-32 = "0.1.4"
 
 [dev-dependencies]
 testresult = "0.4.1"
 dir-diff = "0.3.3"
-rstest = "0.24.0"
-tempfile = "3.15.0"
+rstest = "0.25.0"
+tempfile = "3.20.0"
 
 [lints.clippy]
 pedantic = "deny"

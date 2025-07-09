@@ -66,7 +66,7 @@ fn test_export_with_options(keyring: PathBuf, options: &Options) -> TestResult {
     let mut expected_dir = keyring.clone();
     expected_dir.set_extension("");
     let keyring = std::fs::File::open(keyring)?;
-    let output_dir = tempdir()?.into_path();
+    let output_dir = tempdir()?.keep();
     eprintln!(
         "Comparing {} and {}",
         expected_dir.display(),
