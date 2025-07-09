@@ -7,11 +7,13 @@ use testresult::TestResult;
 use wkd_exporter::{Options, Variant, export};
 
 #[rstest]
+#[test_log::test]
 fn default_options(#[files("tests/test-cases-default/*.pgp")] keyring: PathBuf) -> TestResult {
     test_export_with_options(keyring, &Options::default())
 }
 
 #[rstest]
+#[test_log::test]
 fn archlinux_domain_filter(
     #[files("tests/test-cases-archlinux.org/*.pgp")] keyring: PathBuf,
 ) -> TestResult {
@@ -22,6 +24,7 @@ fn archlinux_domain_filter(
 }
 
 #[rstest]
+#[test_log::test]
 fn archlinux_direct(
     #[files("tests/test-cases-archlinux.org-direct/*.pgp")] keyring: PathBuf,
 ) -> TestResult {
@@ -32,6 +35,7 @@ fn archlinux_direct(
 }
 
 #[rstest]
+#[test_log::test]
 fn append_options(
     #[files("tests/test-cases-default-append/*.pgp")] keyring: PathBuf,
 ) -> TestResult {
@@ -39,6 +43,7 @@ fn append_options(
 }
 
 #[rstest]
+#[test_log::test]
 fn archlinux_domain_filter_append(
     #[files("tests/test-cases-archlinux.org-append/*.pgp")] keyring: PathBuf,
 ) -> TestResult {
@@ -51,6 +56,7 @@ fn archlinux_domain_filter_append(
 }
 
 #[rstest]
+#[test_log::test]
 fn archlinux_direct_append(
     #[files("tests/test-cases-archlinux.org-direct-append/*.pgp")] keyring: PathBuf,
 ) -> TestResult {

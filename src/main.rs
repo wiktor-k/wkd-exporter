@@ -2,6 +2,10 @@ use clap::Parser;
 use wkd_exporter::{Error, Options, Variant, cli::Cli, export};
 
 fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+
     let args = Cli::parse();
 
     let options = Options::default()

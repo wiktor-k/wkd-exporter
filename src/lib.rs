@@ -7,7 +7,9 @@ use email_address::EmailAddress;
 use pgp::{
     composed::{Deserializable, SignedPublicKey},
     ser::Serialize,
+    types::KeyDetails as _,
 };
+use tracing::{debug, info, trace};
 
 #[cfg(feature = "cli")]
 #[doc(hidden)]
@@ -171,6 +173,7 @@ where
 /// )?;
 /// # Ok(()) }
 /// ```
+#[tracing::instrument(skip(keyring), fields(well_known = ?well_known.as_ref()))]
 pub fn export(
     keyring: impl Read,
     well_known: impl AsRef<Path>,
@@ -181,50 +184,71 @@ pub fn export(
     let iterator = SignedPublicKey::from_reader_many(keyring)?.0;
     for key in iterator {
         let key = key?;
-        for (encoded_local, domain) in key
-            .details
-            .users
-            .iter()
-            // FIXME: rpgp >0.16.0 should make this more compact by reusing the same underlying vector via `into_bytes`:
-            // https://github.com/rpgp/rpgp/pull/587/files#diff-5c594c40cbc2d2e401f38bcd423c868e89d9d5cc979fd38081b9a529055b1b0bR78
-            .flat_map(|user| String::from_utf8(user.id.id().to_vec()))
-            .flat_map(|user| EmailAddress::from_str(&user))
-            .map(|email| {
-                use sha1::Digest;
-                let local_part = email.local_part().to_lowercase();
-                let mut digest = sha1::Sha1::new();
-                digest.update(local_part.as_bytes());
-                (
-                    zbase32::encode(&digest.finalize()[..]),
-                    email.domain().to_string(),
-                )
-            })
-            .filter(|(_, domain)| options.is_domain_allowed(domain))
-        {
-            let domain = if let Variant::Advanced = options.variant {
-                &openpgpkey.join(&domain)
-            } else {
-                &openpgpkey
-            };
-            let hu = domain.join("hu");
-            std::fs::create_dir_all(&hu)?;
-
-            OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(domain.join("policy"))?;
-
-            let mut key_file = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .append(options.append)
-                .truncate(!options.append)
-                .open(hu.join(encoded_local))?;
-
-            key.to_writer(&mut key_file)?;
-        }
+        export_key(options, &openpgpkey, &key)?;
     }
 
+    Ok(())
+}
+
+#[tracing::instrument(fields(key = hex::encode(key.primary_key.fingerprint().as_bytes())))]
+fn export_key(
+    options: &Options<'_, '_>,
+    openpgpkey: &std::path::PathBuf,
+    key: &SignedPublicKey,
+) -> Result<(), Error> {
+    for (encoded_local, domain) in key
+        .details
+        .users
+        .iter()
+        // FIXME: rpgp >0.16.0 should make this more compact by reusing the same underlying vector via `into_bytes`:
+        // https://github.com/rpgp/rpgp/pull/587/files#diff-5c594c40cbc2d2e401f38bcd423c868e89d9d5cc979fd38081b9a529055b1b0bR78
+        .flat_map(|user| String::from_utf8(user.id.id().to_vec()))
+        .flat_map(|user| EmailAddress::from_str(&user))
+        .map(|email| {
+            use sha1::Digest;
+            let local_part = email.local_part().to_lowercase();
+            let mut digest = sha1::Sha1::new();
+            digest.update(local_part.as_bytes());
+            let encoded_local = zbase32::encode(&digest.finalize()[..]);
+            debug!(?email, encoded_local, "Encoded local part");
+            (encoded_local, email.domain().to_string())
+        })
+        .filter(|(_, domain)| {
+            let domain_allowed = options.is_domain_allowed(domain);
+            if !domain_allowed {
+                debug!(domain, "Skipping domain");
+            }
+            domain_allowed
+        })
+    {
+        let domain = if let Variant::Advanced = options.variant {
+            &openpgpkey.join(&domain)
+        } else {
+            openpgpkey
+        };
+        let hu = domain.join("hu");
+        std::fs::create_dir_all(&hu)?;
+
+        let policy_file = domain.join("policy");
+
+        trace!(?policy_file, "Making sure the policy file exists");
+        OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(&policy_file)?;
+
+        let key_file_path = hu.join(encoded_local);
+
+        let mut key_file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .append(options.append)
+            .truncate(!options.append)
+            .open(&key_file_path)?;
+
+        info!(?key_file_path, "Writing key to file");
+        key.to_writer(&mut key_file)?;
+    }
     Ok(())
 }
