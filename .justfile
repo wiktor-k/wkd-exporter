@@ -9,6 +9,7 @@ nextest_args := "--locked --workspace"
 udeps_args := "--quiet --workspace --all-features --all-targets"
 
 # Perform all checks
+[parallel]
 check: spell fmt doc lints deps unused-deps test integration-test
 
 # Check spelling
