@@ -6,6 +6,7 @@ const jobs = {
         FF_TIMESTAMPS: true,
         CACHE_COMPRESSION_FORMAT: 'tarzstd',
         RUST_BACKTRACE: 'full',
+        CARGO_INCREMENTAL: 0,
     },
     default: {
         interruptible: true,
