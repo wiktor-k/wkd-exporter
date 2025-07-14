@@ -14,14 +14,14 @@ check: spell fmt doc lints deps unused-deps test integration-test
 
 # Check spelling
 [group('ci')]
+[metadata('pacman', 'codespell')]
 spell:
-    # pacman -S codespell
     codespell
 
 # Check source code formatting
 [group('ci')]
+[metadata('pacman', 'rustup')]
 fmt:
-    # pacman -S rustup
     just --unstable --fmt --check
     # We're using nightly to properly group imports, see .rustfmt.toml
     rustup component add --toolchain nightly rustfmt
@@ -33,12 +33,12 @@ lints:
 
 # Report lints in the source code
 [group('ci')]
+[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
+[metadata('pacman', 'cargo-sonar', 'rust')]
 report-lints:
     #!/usr/bin/bash
     set -euo pipefail
 
-    # pacman -S cargo-sonar rust
-    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
     readonly CLIPPY_JSON=$(mktemp)
     {{ clippy }} --message-format=json -- {{ clippy_args }} > "$CLIPPY_JSON" || EC=$?
     cargo codeclimate --clippy --clippy-path "$CLIPPY_JSON" --codeclimate-path codeclimate.json
@@ -50,12 +50,12 @@ deps:
 
 # Report issues with dependencies
 [group('ci')]
+[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
+[metadata('pacman', 'cargo-deny', 'cargo-sonar')]
 report-deps:
     #!/usr/bin/bash
     set -euo pipefail
 
-    # pacman -S cargo-deny cargo-sonar
-    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
     readonly DENY_JSON=$(mktemp)
     cargo deny --format json check 2> "$DENY_JSON" || EC=$?
     cargo codeclimate --deny --deny-path "$DENY_JSON" --codeclimate-path codeclimate.json
@@ -67,12 +67,12 @@ unused-deps:
 
 # Report unused dependencies
 [group('ci')]
+[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
+[metadata('pacman', 'cargo-sonar', 'cargo-udeps', 'rust')]
 report-unused-deps:
     #!/usr/bin/bash
     set -euxo pipefail
 
-    # pacman -S cargo-sonar cargo-udeps rust
-    # gitlabci-job {"artifacts":{"reports":{"codequality":"codeclimate.json"}}}
     readonly UDEPS_JSON=$(mktemp)
     cargo +nightly udeps {{ udeps_args }} --output json > "$UDEPS_JSON" || EC=$?
     cargo +nightly codeclimate --udeps --udeps-path "$UDEPS_JSON" --codeclimate-path codeclimate.json
@@ -95,12 +95,13 @@ integration-test:
 
 # Report on all tests
 [group('ci')]
+[metadata('gitlabci-job', '{"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}')]
+[metadata('pacman', 'rust', 'cargo-llvm-cov', 'cargo-nextest', 'rustup', 'tangler', 'tree')]
 report-test:
     #!/usr/bin/bash
     # enabling "x" here will garble text output that's parsed by GitLab for code coverage
     set -euo pipefail
 
-    # pacman -S rust cargo-llvm-cov cargo-nextest rustup tangler tree
     rustup component add --toolchain nightly llvm-tools-preview
 
     cargo +nightly llvm-cov clean
@@ -118,7 +119,6 @@ report-test:
     chmod +x "$bin/wkd-exporter"
     tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$bin:$PATH" bash -euxo pipefail -
 
-    # gitlabci-job {"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}
     cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
     LINE_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p')
@@ -130,16 +130,16 @@ report-test:
 
 # Build docs
 [group('ci')]
+[metadata('pacman', 'rust')]
 doc:
-    # pacman -S rust
     RUSTDOCFLAGS='-D warnings' cargo doc --quiet --no-deps --document-private-items
 
 # Check commit messages
 [group('ci')]
+[metadata('pacman', 'codespell', 'git')]
 commits:
     #!/usr/bin/env bash
     set -Eeuo pipefail
-    # pacman -S codespell git
 
     # fetch default branch if it's set
     if [[ -v CI_DEFAULT_BRANCH ]]; then

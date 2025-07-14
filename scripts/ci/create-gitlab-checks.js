@@ -15,6 +15,19 @@ const jobs = {
 
 const getPragma = (body, key) => body.filter(chunk => String(chunk[0]).startsWith(key)).map(chunk => chunk[0].replace(key, ''))[0];
 
+const getMetadata = (attributes, key) => attributes
+    .filter(attribute => 'metadata' in attribute)
+    .flatMap(attribute => {
+        let meta = attribute.metadata;
+        let metaKey = meta[0];
+        if (metaKey === key) {
+            return meta.slice(1);
+        } else {
+            return [];
+        }
+    });
+
+
 for (const file of fs
     .readdirSync(".")
     .filter((file) => file === ".justfile" || file.endsWith(".just"))) {
@@ -30,10 +43,10 @@ for (const file of fs
             recipe.attributes.some((attribute) => attribute.group == "ci"),
         )
         .forEach((recipe) => {
-            let pacman = getPragma(recipe.body, "# pacman -S ");
+            let pacman = getMetadata(recipe.attributes, "pacman");
             const packages = ['just'];
             if (pacman) {
-                packages.push(...pacman.split(' '));
+                packages.push(...pacman);
             }
 
             const job = {
@@ -49,7 +62,7 @@ for (const file of fs
                 ],
             };
 
-            const gitlabci = getPragma(recipe.body, '# gitlabci-job ');
+            const gitlabci = getMetadata(recipe.attributes, "gitlabci-job")[0];
             if (gitlabci) {
                 Object.assign(job, JSON.parse(gitlabci));
             }
