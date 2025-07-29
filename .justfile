@@ -87,7 +87,7 @@ test:
     cargo +nightly test --doc
 
 # Run integration tests
-[metadata('pacman', 'tangler', 'tree')]
+[metadata('pacman', 'jq', 'tangler', 'tree')]
 integration-test:
     #!/usr/bin/bash
     set -euo pipefail
