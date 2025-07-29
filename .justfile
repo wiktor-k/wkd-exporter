@@ -81,7 +81,16 @@ report-unused-deps:
 # Run unit tests
 [metadata('pacman', 'cargo-nextest')]
 test:
-    cargo +nightly nextest run {{ nextest_args }}
+    #!/usr/bin/bash
+    set -euxo pipefail
+
+    if [ ${CI:-} = "true" ]; then
+        PROFILE=ci
+    else
+        PROFILE=default
+    fi
+
+    cargo +nightly nextest run {{ nextest_args }} --profile "$PROFILE"
     # doctests are not currently run by cargo-nextest
     # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly test --doc
