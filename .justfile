@@ -104,22 +104,14 @@ report-test:
 
     rustup component add --toolchain nightly llvm-tools-preview
 
-    source <(cargo +nightly llvm-cov show-env --export-prefix)
+    source <(cargo +nightly llvm-cov show-env --export-prefix --doctests --branch)
     cargo +nightly llvm-cov clean
 
-    # regular unit tests
-    cargo +nightly llvm-cov --branch --no-report nextest {{ nextest_args }} --profile ci
-
-    # doctests are not currently run by cargo-nextest
-    # CHECK https://github.com/nextest-rs/nextest/issues/16
-    cargo +nightly llvm-cov --branch --no-report --doc --locked
-
-    # integration tests
-    just integration-test
+    just test integration-test
 
     # explicitly use "target" (even if CARGO_TARGET_DIR is somewhere else) so that
     # local tools (such as https://github.com/ryanluker/vscode-coverage-gutters) can find the file
-    cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1
+    cargo +nightly llvm-cov --quiet report --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
     LINE_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p')
     LINE_PERCENT=$(echo "$LINE_RATE" | awk '{print $1 * 100}')
@@ -133,7 +125,7 @@ coverage-html-report: report-test
     #!/usr/bin/bash
     set -euo pipefail
     source <(cargo +nightly llvm-cov show-env --export-prefix)
-    cargo +nightly llvm-cov --quiet --branch report --doctests --html
+    cargo +nightly llvm-cov --quiet report --html > /dev/null 2>&1
 
 # Build docs
 [group('ci')]
