@@ -104,6 +104,7 @@ report-test:
 
     rustup component add --toolchain nightly llvm-tools-preview
 
+    source <(cargo +nightly llvm-cov show-env --export-prefix)
     cargo +nightly llvm-cov clean
 
     # regular unit tests
@@ -114,10 +115,7 @@ report-test:
     cargo +nightly llvm-cov --branch --no-report --doc --locked
 
     # integration tests
-    readonly bin=$(mktemp --directory)
-    printf "#!/bin/bash\n\ncargo +nightly llvm-cov --manifest-path %s/Cargo.toml --branch --no-report run -- \"\$@\"\n" "$PWD" > "$bin/wkd-exporter"
-    chmod +x "$bin/wkd-exporter"
-    tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$bin:$PATH" bash -euxo pipefail -
+    just integration-test
 
     cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
