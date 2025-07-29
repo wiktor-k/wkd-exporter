@@ -128,6 +128,13 @@ report-test:
     BRANCH_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*branch-rate=")([^"]*)".*/\2/p')
     printf 'line_coverage_ratio %s\nbranch_coverage_ratio %s\n' "$LINE_RATE" "$BRANCH_RATE" > target/metrics.txt
 
+# Generate HTML report for the coverage
+coverage-html-report: report-test
+    #!/usr/bin/bash
+    set -euo pipefail
+    source <(cargo +nightly llvm-cov show-env --export-prefix)
+    cargo +nightly llvm-cov --quiet --branch report --doctests --html
+
 # Build docs
 [group('ci')]
 [metadata('pacman', 'rust')]
