@@ -89,9 +89,9 @@ test:
 integration-test:
     #!/usr/bin/bash
     set -euo pipefail
-    readonly root=$(mktemp --directory)
-    cargo install --locked --path . --root "$root"
-    tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$root/bin:$PATH" bash -euxo pipefail -
+    cargo +nightly build --locked
+    readonly target=$(cargo +nightly metadata --format-version 1 | jq --raw-output '.target_directory')
+    tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$target/debug:$PATH" bash -euxo pipefail -
 
 # Report on all tests
 [group('ci')]
