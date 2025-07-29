@@ -117,6 +117,8 @@ report-test:
     # integration tests
     just integration-test
 
+    # explicitly use "target" (even if CARGO_TARGET_DIR is somewhere else) so that
+    # local tools (such as https://github.com/ryanluker/vscode-coverage-gutters) can find the file
     cargo +nightly llvm-cov --quiet --branch report --doctests --cobertura --output-path target/coverage.xml > /dev/null 2>&1
 
     LINE_RATE=$(head target/coverage.xml | sed -nE 's/(.*coverage.*line-rate=")([^"]*)".*/\2/p')
