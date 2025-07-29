@@ -27,6 +27,16 @@ const getMetadata = (attributes, key) => attributes
         }
     });
 
+const getRecipePackages = (recipes, name) => {
+    const recipe = recipes[name];
+    const direct = getMetadata(recipe.attributes, 'pacman');
+    const indirectDeps = recipe.body
+        .filter(item => String(item[0]).startsWith('just '))
+        .flatMap(item => item[0].split(' '))
+        .filter(item => item !== 'just' && !item.startsWith('--'));
+    direct.push(...indirectDeps.flatMap(dep => getRecipePackages(recipes, dep)));
+    return direct;
+}
 
 for (const file of fs
     .readdirSync(".")
@@ -37,13 +47,12 @@ for (const file of fs
         }),
     );
 
-
     Object.values(justfile.recipes)
         .filter((recipe) =>
             recipe.attributes.some((attribute) => attribute.group == "ci"),
         )
         .forEach((recipe) => {
-            let pacman = getMetadata(recipe.attributes, "pacman");
+            let pacman = getRecipePackages(justfile.recipes, recipe.name);
             const packages = ['just'];
             if (pacman) {
                 packages.push(...pacman);

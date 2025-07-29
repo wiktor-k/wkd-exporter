@@ -79,6 +79,7 @@ report-unused-deps:
     exit "${EC:-0}"
 
 # Run unit tests
+[metadata('pacman', 'cargo-nextest')]
 test:
     cargo +nightly nextest run {{ nextest_args }}
     # doctests are not currently run by cargo-nextest
@@ -86,6 +87,7 @@ test:
     cargo +nightly test --doc
 
 # Run integration tests
+[metadata('pacman', 'tangler', 'tree')]
 integration-test:
     #!/usr/bin/bash
     set -euo pipefail
@@ -96,7 +98,7 @@ integration-test:
 # Report on all tests
 [group('ci')]
 [metadata('gitlabci-job', '{"coverage":"/Line coverage: ([0-9.]*)%/","artifacts":{"when":"always","reports":{"junit":"target/nextest/ci/junit.xml","metrics":"target/metrics.txt","coverage_report":{"coverage_format":"cobertura","path":"target/coverage.xml"}}}}')]
-[metadata('pacman', 'rust', 'cargo-llvm-cov', 'cargo-nextest', 'rustup', 'tangler', 'tree')]
+[metadata('pacman', 'rust', 'cargo-llvm-cov', 'rustup')]
 report-test:
     #!/usr/bin/bash
     # enabling "x" here will garble text output that's parsed by GitLab for code coverage
