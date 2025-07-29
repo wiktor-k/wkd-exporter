@@ -80,10 +80,10 @@ report-unused-deps:
 
 # Run unit tests
 test:
-    cargo nextest run {{ nextest_args }}
+    cargo +nightly nextest run {{ nextest_args }}
     # doctests are not currently run by cargo-nextest
     # CHECK https://github.com/nextest-rs/nextest/issues/16
-    cargo test --doc
+    cargo +nightly test --doc
 
 # Run integration tests
 integration-test:
