@@ -1,7 +1,4 @@
 #!/usr/bin/env -S just --working-directory . --justfile
-# Since this is a first recipe it's being run by default.
-# Faster checks need to be executed first for better UX.  For example
-# codespell is very fast. cargo fmt does not need to download crates etc.
 
 clippy := "cargo clippy --quiet --workspace --no-deps --all-targets"
 clippy_args := "-D warnings"
@@ -198,28 +195,13 @@ fix:
     # fmt must be last as clippy's changes may break formatting
     cargo +nightly fmt --all
 
-render-script := '''
-    //! ```cargo
-    //! [dependencies]
-    //! pkg = { path = "PATH", package = "wkd-exporter", features = ["cli"] }
-    //! clap_allgen = "0.2.1"
-    //! ```
-
-    fn main() -> Result<(), Box<dyn std::error::Error>> {
-        clap_allgen::render_KIND::<pkg::cli::Cli>(
-            &std::env::args().collect::<Vec<_>>()[1],
-        )?;
-        Ok(())
-    }
-'''
-
 # Render `manpages` or `shell_completions` (`kind`) for the package.
 generate kind:
-    #!/usr/bin/bash
+    #!/usr/bin/env bash
 
     set -Eeuo pipefail
 
-    readonly output_dir="${CARGO_TARGET_DIR:-$PWD/output}"
+    readonly output_dir="${CARGO_TARGET_DIR:-$PWD/target}"
     mkdir --parents "$output_dir"
 
     readonly kind="{{ kind }}"
@@ -232,7 +214,5 @@ generate kind:
           exit 1
     esac
 
-    script="$(mktemp --suffix=.rs)"
-    sed "s#PATH#$PWD#g;s/KIND/{{ kind }}/g" > "$script" <<< '{{ render-script }}'
-    rust-script "$script" "$output_dir/{{ kind }}"
-    rm --force "$script"
+    KIND="{{ kind }}"
+    cargo run --locked --bin "gen-${KIND/_/-}" --features gen -- "$output_dir/{{ kind }}"
