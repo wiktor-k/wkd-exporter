@@ -73,4 +73,4 @@ If you want to fix multiple commits use:
 
     git rebase --signoff main
 
-To check if your commits are correctly signed-off locally use `just check-commits`.
+To check if your commits are correctly signed-off locally use `just commits`.
