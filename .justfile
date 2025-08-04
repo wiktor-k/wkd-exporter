@@ -7,7 +7,7 @@ udeps_args := "--quiet --workspace --all-features --all-targets"
 
 # Perform all checks
 [parallel]
-check: spell fmt doc lints deps unused-deps test integration-test
+check: spell fmt doc lints deps unused-deps recipes test integration-test
 
 # Check spelling
 [group('ci')]
@@ -36,7 +36,7 @@ report-lints:
     #!/usr/bin/bash
     set -euo pipefail
 
-    readonly CLIPPY_JSON=$(mktemp)
+    CLIPPY_JSON=$(mktemp)
     {{ clippy }} --message-format=json -- {{ clippy_args }} > "$CLIPPY_JSON" || EC=$?
     cargo codeclimate --clippy --clippy-path "$CLIPPY_JSON" --codeclimate-path codeclimate.json
     exit "${EC:-0}"
@@ -53,7 +53,7 @@ report-deps:
     #!/usr/bin/bash
     set -euo pipefail
 
-    readonly DENY_JSON=$(mktemp)
+    DENY_JSON=$(mktemp)
     cargo deny --format json check 2> "$DENY_JSON" || EC=$?
     cargo codeclimate --deny --deny-path "$DENY_JSON" --codeclimate-path codeclimate.json
     exit "${EC:-0}"
@@ -70,7 +70,7 @@ report-unused-deps:
     #!/usr/bin/bash
     set -euxo pipefail
 
-    readonly UDEPS_JSON=$(mktemp)
+    UDEPS_JSON=$(mktemp)
     cargo +nightly udeps {{ udeps_args }} --output json > "$UDEPS_JSON" || EC=$?
     cargo +nightly codeclimate --udeps --udeps-path "$UDEPS_JSON" --codeclimate-path codeclimate.json
     exit "${EC:-0}"
@@ -81,7 +81,7 @@ test:
     #!/usr/bin/bash
     set -euxo pipefail
 
-    if [ ${CI:-} = "true" ]; then
+    if [ "${CI:-}" = "true" ]; then
         PROFILE=ci
     else
         PROFILE=default
@@ -98,7 +98,7 @@ integration-test:
     #!/usr/bin/bash
     set -euo pipefail
     cargo +nightly build --locked
-    readonly target=$(cargo +nightly metadata --format-version 1 | jq --raw-output '.target_directory')
+    target=$(cargo +nightly metadata --format-version 1 | jq --raw-output '.target_directory')
     tangler sh < README.md | sed --quiet --regexp-extended 's/^\$ (.*)/\1/p' | PATH="$target/debug:$PATH" bash -euxo pipefail -
 
 # Report on all tests
@@ -112,6 +112,7 @@ report-test:
 
     rustup component add --toolchain nightly llvm-tools-preview
 
+    # shellcheck disable=SC1090
     source <(cargo +nightly llvm-cov show-env --export-prefix --doctests --branch)
     cargo +nightly llvm-cov clean
 
@@ -132,6 +133,7 @@ report-test:
 coverage-html-report: report-test
     #!/usr/bin/bash
     set -euo pipefail
+    # shellcheck disable=SC1090
     source <(cargo +nightly llvm-cov show-env --export-prefix)
     cargo +nightly llvm-cov --quiet report --html > /dev/null 2>&1
 
@@ -150,7 +152,7 @@ commits:
 
     # fetch default branch if it's set
     if [[ -v CI_DEFAULT_BRANCH ]]; then
-        git fetch origin $CI_DEFAULT_BRANCH
+        git fetch origin "$CI_DEFAULT_BRANCH"
         refs="origin/$CI_DEFAULT_BRANCH"
     else
         refs="main"
@@ -174,6 +176,19 @@ commits:
       else
         printf "Commit %s is good.\n" "$commit"
       fi
+    done
+
+# Lint justfile recipes
+[group('ci')]
+[metadata('pacman', 'nodejs', 'shellcheck')]
+recipes:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    T=$(mktemp -d)
+    node --experimental-strip-types scripts/ci/export-shell.ts "$T"
+    for file in "$T"/*.sh; do
+        echo "Checking $file..."
+        shellcheck --shell bash "$file"
     done
 
 # Fixes common issues. Files need to be git add'ed
