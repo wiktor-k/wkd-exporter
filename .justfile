@@ -185,7 +185,7 @@ recipes:
     #!/usr/bin/env bash
     set -euo pipefail
     T=$(mktemp -d)
-    node --experimental-strip-types scripts/ci/export-shell.ts "$T"
+    node scripts/ci/export-shell.ts "$T"
     for file in "$T"/*.sh; do
         echo "Checking $file..."
         shellcheck --shell bash "$file"
