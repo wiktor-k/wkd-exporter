@@ -1,3 +1,6 @@
+#[cfg(not(feature = "cli"))]
+compile_error!("Compilation of the binary requires `cli` feature enabled.");
+
 use clap::Parser;
 use wkd_exporter::{Error, Options, Variant, cli::Cli, export};
 

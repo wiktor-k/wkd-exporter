@@ -212,22 +212,4 @@ fix:
 
 # Render `manpages` or `shell_completions` (`kind`) for the package.
 generate kind:
-    #!/usr/bin/env bash
-
-    set -Eeuo pipefail
-
-    readonly output_dir="${CARGO_TARGET_DIR:-$PWD/target}"
-    mkdir --parents "$output_dir"
-
-    readonly kind="{{ kind }}"
-
-    case "$kind" in
-      manpages|shell_completions)
-          ;;
-      *)
-          printf 'Only "manpages" and "shell_completions" are supported.\n'
-          exit 1
-    esac
-
-    KIND="{{ kind }}"
-    cargo run --locked --bin "gen-${KIND/_/-}" --features gen -- "$output_dir/{{ kind }}"
+    cargo xtask generate {{ kind }}

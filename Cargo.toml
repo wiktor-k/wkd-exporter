@@ -1,7 +1,7 @@
 [package]
 name = "wkd-exporter"
 version = "0.2.2"
-edition = "2024"
+edition.workspace = true
 authors = ["Wiktor Kwapisiewicz <wiktor@metacode.biz>"]
 description = "Exports an OpenPGP keyring into an advanced WKD directory structure"
 repository = "https://gitlab.archlinux.org/archlinux/wkd-exporter"
@@ -10,34 +10,27 @@ keywords = ["openpgp", "wkd", "pgp"]
 categories = ["command-line-utilities"]
 exclude = [".gitlab-ci.yml"]
 
-[[bin]]
-name = "wkd-exporter"
-required-features = ["cli"]
+[workspace]
+members = [".", "xtask"]
+package.edition = "2024"
 
-[[bin]]
-name = "gen-manpages"
-required-features = ["gen"]
-
-[[bin]]
-name = "gen-shell-completions"
-required-features = ["gen"]
+[workspace.dependencies]
+clap = { version = "4.5.41", features = ["derive"] }
 
 [features]
 default = ["cli"]
-cli = ["dep:clap", "dep:tracing-subscriber", "dep:hex"]
-gen = ["cli", "dep:clap_allgen"]
+cli = ["dep:clap", "dep:tracing-subscriber"]
 
 [dependencies]
-clap = { version = "4.5.41", features = ["derive"], optional = true }
+clap = { workspace = true, optional = true }
 email_address = "0.2.9"
 pgp = { version = "0.16.0", default-features = false }
 sha1 = "0.10.6"
 thiserror = "2.0.12"
 z-base-32 = "0.1.4"
-hex = { version = "0.4.3", optional = true }
+hex = { version = "0.4.3" }
 tracing = { version = "0.1.41", features = ["log"] }
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"], optional = true }
-clap_allgen = { version = "0.2.1", optional = true }
 
 [dev-dependencies]
 testresult = "0.4.1"

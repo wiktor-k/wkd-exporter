@@ -1,0 +1,15 @@
+[package]
+name = "xtask"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+clap = { workspace = true, features = ["env"] }
+clap_allgen = { version = "0.2.1" }
+wkd-exporter = { path = ".." }
+
+[lints.rust]
+# `coverage(off)` is not stabilized yet, see:
+# CHECK https://github.com/rust-lang/rust/issues/134749
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(coverage)'] }
