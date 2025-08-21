@@ -10,6 +10,11 @@ keywords = ["openpgp", "wkd", "pgp"]
 categories = ["command-line-utilities"]
 exclude = [".gitlab-ci.yml"]
 
+[[bin]]
+name = "wkd-exporter"
+path = "src/main.rs"
+required-features = ["cli"]
+
 [workspace]
 members = [".", "xtask"]
 package.edition = "2024"
