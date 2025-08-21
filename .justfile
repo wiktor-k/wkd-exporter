@@ -25,55 +25,67 @@ fmt:
     cargo +nightly fmt --quiet --all -- --check
 
 # Lint the source code
-lints:
-    {{ clippy }} -- {{ clippy_args }}
-
-# Report lints in the source code
 [group('ci')]
-[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
-[metadata('pacman', 'cargo-sonar', 'rust')]
-report-lints:
+[metadata('gitlabci-job', '{"artifacts":{"when":"always","paths":["target/clippy"]}}')]
+[metadata('pacman', 'rust')]
+lints:
     #!/usr/bin/bash
     set -euo pipefail
 
-    CLIPPY_JSON=$(mktemp)
-    {{ clippy }} --message-format=json -- {{ clippy_args }} > "$CLIPPY_JSON" || EC=$?
-    cargo codeclimate --clippy --clippy-path "$CLIPPY_JSON" --codeclimate-path codeclimate.json
-    exit "${EC:-0}"
+    if [ "${CI:-}" = "true" ]; then
+        ARGS=(--message-format=json)
+    else
+        ARGS=()
+    fi
+
+    mkdir -p target
+    {{ clippy }} "${ARGS[@]}" -- {{ clippy_args }} | tee target/clippy
+
+# Create lints report
+[group('ci')]
+[metadata('gitlabci-job', '{"stage":"deploy","when":"always","artifacts":{"reports":{"codequality":"target/codeclimate.json"}}}')]
+[metadata('pacman', 'cargo-sonar', 'rust')]
+create-codeclimate:
+    # deny reports can be tested by adding a yanked dep e.g. `cargo add ed25519-dalek@0.9.0`
+    cargo codeclimate \
+        --clippy --clippy-path "target/clippy" \
+        --deny --deny-path "target/deny" \
+        --udeps --udeps-path "target/udeps" \
+        --codeclimate-path target/codeclimate.json
 
 # Check for issues with dependencies
-deps:
-    cargo deny check
-
-# Report issues with dependencies
 [group('ci')]
-[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
-[metadata('pacman', 'cargo-deny', 'cargo-sonar')]
-report-deps:
+[metadata('gitlabci-job', '{"artifacts":{"when":"always","paths":["target/deny"]}}')]
+[metadata('pacman', 'cargo-deny')]
+deps:
     #!/usr/bin/bash
     set -euo pipefail
 
-    DENY_JSON=$(mktemp)
-    cargo deny --format json check 2> "$DENY_JSON" || EC=$?
-    cargo codeclimate --deny --deny-path "$DENY_JSON" --codeclimate-path codeclimate.json
-    exit "${EC:-0}"
+    if [ "${CI:-}" = "true" ]; then
+        ARGS=(--format json)
+    else
+        ARGS=()
+    fi
+
+    mkdir -p target
+    cargo deny "${ARGS[@]}" check 2>&1 | tee target/deny
 
 # Check for unused dependencies
-unused-deps:
-    cargo +nightly udeps {{ udeps_args }}
-
-# Report unused dependencies
 [group('ci')]
-[metadata('gitlabci-job', '{"artifacts":{"reports":{"codequality":"codeclimate.json"}}}')]
-[metadata('pacman', 'cargo-sonar', 'cargo-udeps', 'rust')]
-report-unused-deps:
+[metadata('gitlabci-job', '{"artifacts":{"when":"always","paths":["target/udeps"]}}')]
+[metadata('pacman', 'cargo-udeps', 'rust')]
+unused-deps:
     #!/usr/bin/bash
-    set -euxo pipefail
+    set -euo pipefail
 
-    UDEPS_JSON=$(mktemp)
-    cargo +nightly udeps {{ udeps_args }} --output json > "$UDEPS_JSON" || EC=$?
-    cargo +nightly codeclimate --udeps --udeps-path "$UDEPS_JSON" --codeclimate-path codeclimate.json
-    exit "${EC:-0}"
+    if [ "${CI:-}" = "true" ]; then
+        ARGS=(--output json)
+    else
+        ARGS=()
+    fi
+
+    mkdir -p target
+    cargo +nightly udeps {{ udeps_args }} "${ARGS[@]}" | tee target/udeps
 
 # Run unit tests
 [metadata('pacman', 'cargo-nextest')]
