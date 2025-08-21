@@ -67,6 +67,12 @@ export(
 ).expect("exporting to succeed");
 ```
 
+Note that by default the CLI feature is enabled so to minimize the number of dependencies it is advisable to disable default features when importing as a library:
+
+```sh no_run
+cargo add wkd-exporter --no-default-features
+```
+
 ## Multiple certificates
 
 The `--append` flag causes all certificates sharing the same local part (`user` in `user@example.com`) to be exported in the same location.

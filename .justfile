@@ -100,9 +100,11 @@ test:
     fi
 
     cargo +nightly nextest run {{ nextest_args }} --profile "$PROFILE"
+    cargo +nightly nextest run --no-default-features {{ nextest_args }} --profile "$PROFILE"
     # doctests are not currently run by cargo-nextest
     # CHECK https://github.com/nextest-rs/nextest/issues/16
     cargo +nightly test --doc
+    cargo +nightly test --doc --no-default-features
 
 # Run integration tests
 [metadata('pacman', 'jq', 'tangler', 'tree')]
