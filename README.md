@@ -14,8 +14,6 @@ Install it using your package manager or via cargo:
 cargo install wkd-exporter
 ```
 
-Use it like this (advanced variant with a domain filter):
-
 <!--
 ```sh
 $ export GNUPGHOME=$(mktemp -d)
@@ -23,6 +21,10 @@ $ export RUST_LOG=wkd_exporter=debug
 $ gpg --import tests/test-cases-default/simple.pgp
 ```
 -->
+
+<!-- BEGIN CLI EXAMPLE -->
+
+For bigger deployments, using the advanced variant with a domain filter is recommended:
 
 ```sh
 $ DIR=$(mktemp -d)
@@ -54,6 +56,8 @@ $ tree $DIR | head
 ```
 
 Logging can be enabled using `RUST_LOG` environment variable (e.g. `RUST_LOG=wkd_exporter=debug` enables debug-level logging).
+
+<!-- END CLI EXAMPLE -->
 
 This project can also be used as a library:
 

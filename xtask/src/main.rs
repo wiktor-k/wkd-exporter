@@ -3,8 +3,11 @@
 
 use std::{env::var, path::PathBuf};
 
+use cargo_toml::Manifest;
 use clap::{Parser, ValueEnum};
 use clap_allgen::{render_manpages, render_shell_completions};
+use enum_values::EnumValues as _;
+use roff::{Inline, Roff, bold};
 use wkd_exporter::cli::Cli as WkdExporterCli;
 
 #[derive(Parser, Debug)]
@@ -37,7 +40,7 @@ enum ArtifactKind {
     ShellCompletions,
 }
 
-fn main() -> Result<(), clap_allgen::Error> {
+fn main() -> testresult::TestResult {
     let args = Commands::parse();
     match args {
         Commands::Generate(cmd) => {
@@ -49,11 +52,79 @@ fn main() -> Result<(), clap_allgen::Error> {
                 .join(cmd.kind.to_possible_value().unwrap().get_name());
 
             match cmd.kind {
-                ArtifactKind::Manpages => render_manpages::<WkdExporterCli>(&output),
+                ArtifactKind::Manpages => {
+                    render_manpages::<WkdExporterCli>(&output)?;
+
+                    let mut file = std::fs::OpenOptions::new()
+                        .append(true)
+                        .open(output.join("wkd-exporter.1"))?;
+
+                    let mut roff = Roff::default();
+                    roff.control("SH", ["EXIT STATUS"]);
+                    roff.text(["On success the application returns 0.".into()]);
+                    roff.text([Inline::LineBreak]);
+                    roff.text(["On failure the following exit codes are used:".into()]);
+
+                    for variant in wkd_exporter::Error::variants() {
+                        roff.text([Inline::LineBreak]);
+                        roff.text([bold(variant.value.to_string())]);
+                        roff.control("RS", []);
+                        roff.text([variant.doc.into()]);
+                        roff.control("RE", []);
+                    }
+
+                    let readme = std::fs::read_to_string("README.md")?;
+                    let readme = readme
+                        .split("\n")
+                        .skip_while(|s| !s.contains("<!-- BEGIN CLI EXAMPLE -->"))
+                        .skip(1)
+                        .take_while(|s| !s.contains("<!-- END CLI EXAMPLE -->"));
+
+                    roff.control("SH", ["EXAMPLES"]);
+                    roff.text(
+                        readme
+                            .into_iter()
+                            .flat_map(|s| [s.into(), Inline::LineBreak])
+                            .collect::<Vec<_>>(),
+                    );
+
+                    eprintln!("s: {}", std::env::var("PWD")?);
+                    let manifest = Manifest::from_path("./Cargo.toml")?;
+
+                    roff.control("SH", ["BUGS"]);
+                    roff.text([
+                        "Please report all bugs to ".into(),
+                        manifest
+                            .package()
+                            .repository()
+                            .expect("repository to be set")
+                            .into(),
+                    ]);
+
+                    roff.control("SH", ["AUTHORS"]);
+                    roff.text(
+                        manifest
+                            .package()
+                            .authors()
+                            .iter()
+                            .flat_map(|s| [s.into(), Inline::LineBreak])
+                            .collect::<Vec<_>>(),
+                    );
+
+                    roff.control("SH", ["COPYRIGHT"]);
+                    roff.text([manifest
+                        .package()
+                        .license()
+                        .expect("published software to have a license")
+                        .into()]);
+
+                    roff.to_writer(&mut file)?;
+                }
                 ArtifactKind::ShellCompletions => {
-                    render_shell_completions::<WkdExporterCli>(&output)
+                    render_shell_completions::<WkdExporterCli>(&output)?;
                 }
             }
         }
     }
+    Ok(())
 }

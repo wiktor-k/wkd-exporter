@@ -1,7 +1,9 @@
-use clap::Parser;
-use wkd_exporter::{Error, Options, Variant, cli::Cli, export};
+use std::process::{ExitCode, Termination};
 
-fn main() -> Result<(), Error> {
+use clap::Parser;
+use wkd_exporter::{Options, Variant, cli::Cli, export};
+
+fn main() -> ExitCode {
     tracing_subscriber::fmt::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
@@ -22,6 +24,10 @@ fn main() -> Result<(), Error> {
         )
         .set_append(args.append);
 
-    export(std::io::stdin(), args.well_known, &options)?;
-    Ok(())
+    if let Err(e) = export(std::io::stdin(), args.well_known, &options) {
+        tracing::error!(error = %e);
+        e.report()
+    } else {
+        ExitCode::SUCCESS
+    }
 }

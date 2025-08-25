@@ -1,7 +1,13 @@
 #![doc = include_str!("../README.md")]
 #![deny(missing_docs)]
 
-use std::{fs::OpenOptions, io::Read, path::Path, str::FromStr};
+use std::{
+    fs::OpenOptions,
+    io::Read,
+    path::Path,
+    process::{ExitCode, Termination},
+    str::FromStr,
+};
 
 use email_address::EmailAddress;
 use pgp::{
@@ -17,15 +23,25 @@ pub mod cli;
 
 /// Error when exporting the keyring.
 #[derive(Debug, thiserror::Error)]
+#[cfg_attr(feature = "gen", derive(enum_values::EnumValues))]
 #[non_exhaustive]
+#[repr(u8)]
 pub enum Error {
-    /// PGP processing failed.
+    /// Processing OpenPGP data failed.
     #[error("PGP processing error occurred: {0}")]
-    Pgp(#[from] pgp::errors::Error),
+    Pgp(#[from] pgp::errors::Error) = 2,
 
-    /// I/O operation failed.
+    /// Reading or writing files failed.
     #[error("I/O error occurred: {0}")]
-    Io(#[from] std::io::Error),
+    Io(#[from] std::io::Error) = 3,
+}
+
+impl Termination for Error {
+    fn report(self) -> ExitCode {
+        // apparently there is no other way to access the discriminant of this enum
+        // see: https://github.com/rust-lang/rust/pull/60732/files#diff-997afb68e691752daef215d61b70169639e899bb04a2a76bcb4c211cd1666d7cR30
+        ExitCode::from(unsafe { *(&raw const self).cast::<u8>() })
+    }
 }
 
 /// WKD variant.

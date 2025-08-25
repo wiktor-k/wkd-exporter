@@ -7,7 +7,11 @@ publish = false
 [dependencies]
 clap = { workspace = true, features = ["env"] }
 clap_allgen = { version = "0.2.1" }
-wkd-exporter = { path = ".." }
+roff = "0.2.2"
+testresult = "0.4.1"
+wkd-exporter = { path = "..", features = ["cli", "gen"] }
+enum-values = "0.1.0"
+cargo_toml = "0.22.3"
 
 [lints.rust]
 # `coverage(off)` is not stabilized yet, see:
