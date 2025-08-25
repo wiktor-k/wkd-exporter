@@ -17,6 +17,7 @@ required-features = ["cli"]
 
 [workspace]
 members = [".", "xtask"]
+resolver = "3"
 package.edition = "2024"
 
 [workspace.dependencies]
