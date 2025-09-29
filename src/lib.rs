@@ -216,10 +216,8 @@ fn export_key(
         .details
         .users
         .iter()
-        // FIXME: rpgp >0.16.0 should make this more compact by reusing the same underlying vector via `into_bytes`:
-        // https://github.com/rpgp/rpgp/pull/587/files#diff-5c594c40cbc2d2e401f38bcd423c868e89d9d5cc979fd38081b9a529055b1b0bR78
-        .flat_map(|user| String::from_utf8(user.id.id().to_vec()))
-        .flat_map(|user| EmailAddress::from_str(&user))
+        .filter_map(|user| user.id.as_str().map(|id| EmailAddress::from_str(id).ok()))
+        .flatten()
         .map(|email| {
             use sha1::Digest;
             let local_part = email.local_part().to_lowercase();
