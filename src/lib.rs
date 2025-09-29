@@ -206,7 +206,7 @@ pub fn export(
     Ok(())
 }
 
-#[tracing::instrument(fields(key = hex::encode(key.primary_key.fingerprint().as_bytes())))]
+#[tracing::instrument(fields(key = format!("{:x}", key.primary_key.fingerprint())))]
 fn export_key(
     options: &Options<'_, '_>,
     openpgpkey: &std::path::PathBuf,

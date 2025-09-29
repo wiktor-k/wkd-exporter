@@ -37,7 +37,6 @@ sha1 = "0.10.6"
 thiserror = "2.0.17"
 # rename the z-base-32 package to suppress false positive from cargo-machete
 zbase32 = { package = "z-base-32", version = "0.1.4" }
-hex = { version = "0.4.3" }
 tracing = { version = "0.1.41", features = ["log"] }
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"], optional = true }
 

@@ -2632,7 +2632,6 @@ dependencies = [
  "dir-diff",
  "email_address",
  "enum-values",
- "hex",
  "pgp",
  "rstest",
  "sha1",
