@@ -221,9 +221,7 @@ fn export_key(
         .map(|email| {
             use sha1::Digest;
             let local_part = email.local_part().to_lowercase();
-            let mut digest = sha1::Sha1::new();
-            digest.update(local_part.as_bytes());
-            let encoded_local = zbase32::encode(&digest.finalize()[..]);
+            let encoded_local = zbase32::encode(&sha1::Sha1::digest(local_part));
             debug!(?email, encoded_local, "Encoded local part");
             (encoded_local, email.domain().to_string())
         })
