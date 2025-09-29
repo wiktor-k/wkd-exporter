@@ -73,7 +73,7 @@ deps:
 # Check for unused dependencies
 [group('ci')]
 [metadata('gitlabci-job', '{"artifacts":{"when":"always","paths":["target/udeps"]}}')]
-[metadata('pacman', 'cargo-udeps', 'rust')]
+[metadata('pacman', 'cargo-machete', 'cargo-udeps', 'rust')]
 unused-deps:
     #!/usr/bin/bash
     set -euo pipefail
@@ -86,6 +86,7 @@ unused-deps:
 
     mkdir -p target
     cargo +nightly udeps {{ udeps_args }} "${ARGS[@]}" | tee target/udeps
+    cargo +nightly machete
 
 # Run unit tests
 [metadata('pacman', 'cargo-nextest')]
