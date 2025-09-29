@@ -25,7 +25,7 @@ fn main() -> ExitCode {
         .set_append(args.append);
 
     if let Err(e) = export(std::io::stdin(), args.well_known, &options) {
-        tracing::error!(error = %e);
+        tracing_log_error::log_error!(e);
         e.report()
     } else {
         ExitCode::SUCCESS

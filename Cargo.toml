@@ -25,7 +25,7 @@ clap = { version = "4.5.48", features = ["derive"] }
 
 [features]
 default = ["cli"]
-cli = ["dep:clap", "dep:tracing-subscriber"]
+cli = ["dep:clap", "dep:tracing-subscriber", "dep:tracing_log_error"]
 gen = ["dep:enum-values"]
 
 [dependencies]
@@ -39,6 +39,7 @@ thiserror = "2.0.17"
 zbase32 = { package = "z-base-32", version = "0.1.4" }
 tracing = { version = "0.1.41", features = ["log"] }
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"], optional = true }
+tracing_log_error = { version = "0.1.4", optional = true }
 
 [dev-dependencies]
 testresult = "0.4.1"
