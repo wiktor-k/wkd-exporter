@@ -16,6 +16,10 @@ cargo install --locked wkd-exporter
 
 <!--
 ```sh
+# we need to specify toolchain to have consistent behavior in CI
+$ cargo() {
+$   command cargo +nightly $@
+$ }
 $ export GNUPGHOME=$(mktemp -d)
 $ export RUST_LOG=wkd_exporter=debug
 $ gpg --import tests/test-cases-default/simple.pgp
@@ -95,6 +99,22 @@ For that reason it is advisable to use a fresh directory when using `--append`.
 That is one of the reasons why this flag is not enabled by default (even though it is recommended).
 
 Append may become the default (and a no-op) when [certificate merging has been implemented](https://codeberg.org/heiko/rpgpie/issues/1) in our backing library.
+
+## Packaging the CLI
+
+To generate manpages for the `wkd-exporter` command-line program in the `target/manpages` directory use the the following task:
+
+```sh
+$ cargo xtask generate manpages target
+```
+
+The manpage can be read via `man --local-file target/manpages/wkd-exporter.1`
+
+Generating shell completions to `target/shell_completions` uses this task:
+
+```sh
+$ cargo xtask generate shell_completions target
+```
 
 ## License
 
