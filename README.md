@@ -66,6 +66,20 @@ Errors are always logged, regardless of the log level, and the exit status indic
 
 <!-- END CLI EXAMPLE -->
 
+<!--
+```sh
+# testing un-happy path
+$ set +e
+$ wkd-exporter --append --domain archlinux.org /tmp < /dev/null
+$ EXITCODE=$?
+$ set -e
+$ if [ $EXITCODE -ne 2 ]; then
+$   printf "Expected exit code 2 but got %d\n" "$EXITCODE"
+$   exit 1
+$ fi
+```
+-->
+
 See [Key Discovery][WKDKD] for differences between these two modes.
 Advanced variant is served from the `openpgpkey` subdomain (e.g. `openpgpkey.example.com`) while the direct variant is served from the root domain (e.g. `example.com`).
 
