@@ -88,7 +88,6 @@ fn main() -> testresult::TestResult {
                             .collect::<Vec<_>>(),
                     );
 
-                    eprintln!("s: {}", std::env::var("PWD")?);
                     let manifest = Manifest::from_path("./Cargo.toml")?;
 
                     roff.control("SH", ["BUGS"]);
