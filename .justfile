@@ -179,17 +179,20 @@ commits:
       CODESPELL_RC="$(mktemp)"
       git show "$commit:.codespellrc" > "$CODESPELL_RC"
       if ! grep -q "Signed-off-by: " <<< "$MSG"; then
-        printf "Commit %s lacks \"Signed-off-by\" line.\n" "$commit"
+        printf "⛔ Commit %s lacks \"Signed-off-by\" line.\n" "$commit"
         printf "%s\n" \
             "  Please use:" \
             "    git rebase --signoff main && git push --force-with-lease" \
             "  See https://developercertificate.org/ for more details."
         exit 1;
       elif ! codespell --config "$CODESPELL_RC" - <<< "$MSG"; then
-        printf "The spelling in commit %s needs improvement.\n" "$commit"
+        printf "⛔ The spelling in commit %s needs improvement.\n" "$commit"
+        exit 1;
+      elif grep "WIP: " <<< "$MSG"; then
+        printf "⛔ Commit %s includes a 'WIP' marker which should be removed.\n" "$commit"
         exit 1;
       else
-        printf "Commit %s is good.\n" "$commit"
+        printf "✅ Commit %s is good.\n" "$commit"
       fi
     done
 
