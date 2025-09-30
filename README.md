@@ -98,7 +98,8 @@ Note that if the same directory is used for export and `--append` flag has been 
 For that reason it is advisable to use a fresh directory when using `--append`.
 That is one of the reasons why this flag is not enabled by default (even though it is recommended).
 
-Append may become the default (and a no-op) when [certificate merging has been implemented](https://codeberg.org/heiko/rpgpie/issues/1) in our backing library.
+An alternative solution: certificate merging, [is being implemented](https://gitlab.archlinux.org/archlinux/wkd-exporter/-/merge_requests/29).
+If you're interested in this feature, please reach out and help stabilizing this feature by testing it in your setup.
 
 ## Packaging the CLI
 
