@@ -151,6 +151,7 @@ coverage-html-report: report-test
     # shellcheck disable=SC1090
     source <(cargo +nightly llvm-cov show-env --export-prefix)
     cargo +nightly llvm-cov --quiet report --html > /dev/null 2>&1
+    printf "The coverage report is in file://%s/llvm-cov/html/index.html\n" "${CARGO_TARGET_DIR:-target}"
 
 # Build docs
 [group('ci')]
