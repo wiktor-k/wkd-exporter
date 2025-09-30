@@ -108,7 +108,7 @@ test:
     cargo +nightly test --doc --no-default-features
 
 # Run integration tests
-[metadata('pacman', 'jq', 'tangler', 'tree')]
+[metadata('pacman', 'git', 'jq', 'openssh', 'tangler', 'tree')]
 integration-test:
     #!/usr/bin/bash
     set -euo pipefail

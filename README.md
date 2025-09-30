@@ -20,6 +20,8 @@ cargo install --locked wkd-exporter
 $ cargo() {
 $   command cargo +nightly $@
 $ }
+# fetch tags for verification later
+$ git fetch --tags
 $ export GNUPGHOME=$(mktemp -d)
 $ export RUST_LOG=wkd_exporter=debug
 $ gpg --import tests/test-cases-default/simple.pgp
@@ -115,6 +117,13 @@ Generating shell completions to `target/shell_completions` uses this task:
 
 ```sh
 $ cargo xtask generate shell_completions target
+```
+
+Tags are signed using SSH keys.
+The signature can be verified against the official list of signing keys (`.config/git_allowed_signers` file) via:
+
+```sh
+$ git -c gpg.ssh.allowedSignersFile=.config/git_allowed_signers verify-tag v0.2.0
 ```
 
 ## License
