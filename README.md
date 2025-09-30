@@ -11,7 +11,7 @@ Exports an OpenPGP keyring into the [Web Key Directory][WKD] directory path.
 Install it using your package manager or via cargo:
 
 ```sh no_run
-cargo install wkd-exporter
+cargo install --locked wkd-exporter
 ```
 
 <!--
@@ -56,8 +56,14 @@ $ tree $DIR | head
 ```
 
 Logging can be enabled using `RUST_LOG` environment variable (e.g. `RUST_LOG=wkd_exporter=debug` enables debug-level logging).
+Errors are always logged, regardless of the log level, and the exit status indicates the type of the error.
 
 <!-- END CLI EXAMPLE -->
+
+See [Key Discovery][WKDKD] for differences between these two modes.
+Advanced variant is served from the `openpgpkey` subdomain (e.g. `openpgpkey.example.com`) while the direct variant is served from the root domain (e.g. `example.com`).
+
+[WKDKD]: https://www.ietf.org/archive/id/draft-koch-openpgp-webkey-service-20.html#section-3.1
 
 This project can also be used as a library:
 
