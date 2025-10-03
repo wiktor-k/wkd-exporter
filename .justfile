@@ -241,14 +241,14 @@ pre-publish:
     #!/usr/bin/bash
     set -euxo pipefail
 
-    cargo +stable semver-checks
+    cargo semver-checks
 
     # check if all dependencies have been updated
-    cargo +stable upgrade --incompatible
-    cargo +stable update
+    cargo upgrade --incompatible
+    cargo update
 
     # if deps have been upgraded publish will fail because of dirty workspace
-    cargo +stable publish --dry-run
+    cargo publish --dry-run
 
 # Publish the package
 [group('ci')]
@@ -266,7 +266,7 @@ publish:
     tag_version="${CI_COMMIT_TAG/v/}"
 
     # set the version in Cargo.toml to the same one as the tag
-    cargo +stable --locked set-version --package wkd-exporter "$tag_version"
+    cargo --locked set-version --package wkd-exporter "$tag_version"
 
     # if the version does not match cargo publish will fail because of dirty working directory
-    cargo +stable publish
+    cargo publish
