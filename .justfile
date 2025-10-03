@@ -233,6 +233,23 @@ fix:
 generate kind:
     cargo xtask generate {{ kind }}
 
+# Test before publishing the package
+[group('ci')]
+[metadata('gitlabci-job', '{"stage":"deploy","rules":[{"if":"$CI_MERGE_REQUEST_TITLE =~ /^Release/"}]}')]
+[metadata('pacman', 'cargo-edit', 'cargo-semver-checks', 'rust')]
+pre-publish:
+    #!/usr/bin/bash
+    set -euxo pipefail
+
+    cargo +stable semver-checks
+
+    # check if all dependencies have been updated
+    cargo +stable upgrade --incompatible
+    cargo +stable update
+
+    # if deps have been upgraded publish will fail because of dirty workspace
+    cargo +stable publish --dry-run
+
 # Publish the package
 [group('ci')]
 [metadata('gitlabci-job', '{"stage":"deploy","rules":[{"if":"$CI_COMMIT_TAG =~ /^v\\d/"}]}')]
