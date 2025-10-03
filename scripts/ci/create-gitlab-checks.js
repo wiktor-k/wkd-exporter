@@ -10,6 +10,12 @@ const jobs = {
     },
     default: {
         interruptible: true,
+    },
+    workflow: {
+        rules: [
+          { if: '$CI_PIPELINE_SOURCE == "merge_request_event"' },
+          { if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH' }
+        ]
     }
 };
 
