@@ -166,7 +166,7 @@ commits:
     #!/usr/bin/env bash
     set -Eeuo pipefail
 
-    # fetch default branch if it's set
+    # fetch default branch if it is set
     if [[ -v CI_DEFAULT_BRANCH ]]; then
         git fetch origin "$CI_DEFAULT_BRANCH"
         refs="origin/$CI_DEFAULT_BRANCH"
@@ -226,9 +226,30 @@ fix:
     # try to fix clippy issues
     cargo clippy --fix --allow-staged
 
-    # fmt must be last as clippy's changes may break formatting
+    # fmt must be last as clippy changes may break formatting
     cargo +nightly fmt --all
 
 # Render `manpages` or `shell_completions` (`kind`) for the package.
 generate kind:
     cargo xtask generate {{ kind }}
+
+# Publish the package
+[group('ci')]
+[metadata('gitlabci-job', '{"stage":"deploy","rules":[{"if":"$CI_COMMIT_TAG =~ /^v\\d/"}]}')]
+[metadata('pacman', 'cargo-edit', 'rust')]
+publish:
+    #!/usr/bin/bash
+    set -euxo pipefail
+
+    if [[ -z "${CI_COMMIT_TAG:-}" ]]; then
+        printf "The job runs only when \$CI_COMMIT_TAG environment variable is set.\n" >&2
+        exit 1
+    fi
+
+    tag_version="${CI_COMMIT_TAG/v/}"
+
+    # set the version in Cargo.toml to the same one as the tag
+    cargo +stable --locked set-version --package wkd-exporter "$tag_version"
+
+    # if the version does not match cargo publish will fail because of dirty working directory
+    cargo +stable publish
