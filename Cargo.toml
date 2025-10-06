@@ -1,6 +1,6 @@
 [package]
 name = "wkd-exporter"
-version = "0.3.0"
+version = "0.3.2"
 edition.workspace = true
 authors = ["Wiktor Kwapisiewicz <wiktor@metacode.biz>"]
 description = "Exports an OpenPGP keyring into an advanced WKD directory structure"
