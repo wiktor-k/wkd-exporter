@@ -14,7 +14,8 @@ const jobs = {
     workflow: {
         rules: [
           { if: '$CI_PIPELINE_SOURCE == "merge_request_event"' },
-          { if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH' }
+          { if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH' },
+          { if: '$CI_COMMIT_TAG =~ /^v\\d/' }
         ]
     }
 };
