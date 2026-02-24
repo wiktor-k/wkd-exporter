@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 clap = { workspace = true, features = ["env"] }
 clap_allgen = { version = "0.2.1" }
-roff = "0.2.2"
+roff = "1.0.0"
 testresult = "0.4.1"
 wkd-exporter = { path = "..", features = ["cli", "gen"] }
 enum-values = "0.1.0"
