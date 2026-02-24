@@ -231,7 +231,7 @@ fix:
         exit 1
     fi
 
-    codespell --write-changes
+    typos --write-changes
     just --unstable --fmt
     # try to fix rustc issues
     cargo fix --allow-staged
