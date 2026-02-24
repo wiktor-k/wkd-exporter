@@ -30,7 +30,7 @@
       "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just codespell git",
+      "pacman -Syu --needed --noconfirm just git typos",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile commits"
     ]
@@ -190,10 +190,16 @@
       "echo -e \"\\e[0Ksection_start:`date +%s`:deps[collapsed=true]\\r\\e[0KInstalling job dependencies\"",
       "pacman-key --init",
       "pacman -Sy --needed --noconfirm archlinux-keyring",
-      "pacman -Syu --needed --noconfirm just codespell",
+      "pacman -Syu --needed --noconfirm just typos",
       "echo -e \"\\e[0Ksection_end:`date +%s`:deps\\r\\e[0K\"",
       "just --justfile .justfile spell"
-    ]
+    ],
+    "artifacts": {
+      "when": "always",
+      "paths": [
+        "target/typos"
+      ]
+    }
   },
   "Check for unused dependencies": {
     "image": "archlinux",

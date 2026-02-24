@@ -1,0 +1,5 @@
+[files]
+extend-exclude = [
+  "*.pgp",
+  "tests/test-cases-*",
+]

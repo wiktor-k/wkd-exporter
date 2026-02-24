@@ -11,9 +11,20 @@ check: spell fmt doc lints deps unused-deps recipes test integration-test
 
 # Check spelling
 [group('ci')]
-[metadata('pacman', 'codespell')]
+[metadata('gitlabci-job', '{"artifacts":{"when":"always","paths":["target/typos"]}}')]
+[metadata('pacman', 'typos')]
 spell:
-    codespell
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    if [ "${CI:-}" = "true" ]; then
+        ARGS=(--format=json)
+    else
+        ARGS=()
+    fi
+
+    mkdir -p target
+    typos "${ARGS[@]}" | tee target/typos
 
 # Check source code formatting
 [group('ci')]
@@ -51,6 +62,7 @@ create-codeclimate:
         --clippy --clippy-path "target/clippy" \
         --deny --deny-path "target/deny" \
         --udeps --udeps-path "target/udeps" \
+        --typos --typos-path "target/typos" \
         --codeclimate-path target/codeclimate.json
 
 # Check for issues with dependencies
@@ -161,7 +173,7 @@ doc:
 
 # Check commit messages
 [group('ci')]
-[metadata('pacman', 'codespell', 'git')]
+[metadata('pacman', 'git', 'typos')]
 commits:
     #!/usr/bin/env bash
     set -Eeuo pipefail
@@ -177,8 +189,8 @@ commits:
     commits=$(git rev-list "${refs}..")
     for commit in $commits; do
       MSG="$(git show -s --format=%B "$commit")"
-      CODESPELL_RC="$(mktemp)"
-      git show "$commit:.codespellrc" > "$CODESPELL_RC"
+      TYPOS_TOML="$(mktemp)"
+      git show "$commit:.typos.toml" > "$TYPOS_TOML"
       if ! grep -q "Signed-off-by: " <<< "$MSG"; then
         printf "⛔ Commit %s lacks \"Signed-off-by\" line.\n" "$commit"
         printf "%s\n" \
@@ -186,7 +198,7 @@ commits:
             "    git rebase --signoff main && git push --force-with-lease" \
             "  See https://developercertificate.org/ for more details."
         exit 1;
-      elif ! codespell --config "$CODESPELL_RC" - <<< "$MSG"; then
+      elif ! typos --config "$TYPOS_TOML" - <<< "$MSG"; then
         printf "⛔ The spelling in commit %s needs improvement.\n" "$commit"
         exit 1;
       elif grep "WIP: " <<< "$MSG"; then

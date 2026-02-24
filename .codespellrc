@@ -1,3 +1,0 @@
-[codespell]
-skip = .cargo,.git,target,Cargo.lock
-ignore-words-list = crate,ser
