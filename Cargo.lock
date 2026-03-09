@@ -2446,7 +2446,7 @@ dependencies = [
 
 [[package]]
 name = "wkd-exporter"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "clap",
  "dir-diff",
@@ -2488,7 +2488,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.3.3"
 dependencies = [
  "cargo_toml",
  "clap",
